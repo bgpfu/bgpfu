@@ -1,3 +1,4 @@
 click>=5.1
 munge>=0.1.5
 PyYAML>=3.11
+Jinja2==2.8
