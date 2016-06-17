@@ -31,5 +31,6 @@ def raw(ctx, query, **kwargs):
 
     bgpfuc = bgpfu.client.IRRClient()
     with bgpfuc as c:
-        print("received:", c.query(query + '\n'))
+        data = c.query(query + '\n')
+        print(data)
 

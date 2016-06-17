@@ -8,10 +8,11 @@ class IRRClient(object):
 
     def __init__(self):
         self.keepalive = True
+        self.host = 'whois.radb.net'
         self.host = 'rr.ntt.net'
         self.port = 43
 
-        self.re_res = re.compile('(?P<state>[A])(?P<len>\d+)\n')
+        self.re_res = re.compile('(?P<state>[ACD])(?P<len>\d+)$')
 
         self.log = logging.getLogger(__name__)
 
@@ -38,30 +39,37 @@ class IRRClient(object):
                 raise RuntimeError("socket connection broken")
             ttl = ttl + sent
 
-        self.log.debug("sent %s %d" % (q.rstrip(), ttl))
+        self.log.debug("sent %s %d", q.rstrip(), ttl)
 
         chunks = []
         ttl = 0
         chunk_size = 4096
 
-        print("reading")
         chunk = self.sckt.recv(chunk_size)
-        print("read", chunk)
-        match = self.re_res.match(chunk)
+        state, chunk = chunk.split('\n', 1)
+        self.log.debug("state %s", state)
+        match = self.re_res.match(state)
         if not match:
             raise RuntimeError("invalid response '%s'" % (chunk,))
 
         sz = int(match.group('len'))
         ttl = len(chunk)
         chunks.append(chunk)
-        print("sz", sz, "have", len(chunk))
 
-        while ttl < sz:
-            chunk = self.sckt.recv(min(sz - ttl, chunk_size))
+        while ttl <= sz:
+            self.log.debug("ttl %d, sz %d", ttl, sz)
+            chunk = self.sckt.recv(chunk_size)
             if chunk == '':
                 raise RuntimeError("socket connection broken")
             chunks.append(chunk)
             ttl = ttl + len(chunk)
-            print("got ", chunks, bytes_recd)
+#            self.log.debug("ttl %d, sz %d", ttl, sz)
+#            self.log.debug("chunk '%s'", chunk)
+
+        # split data from response code
+        self.log.debug("ttl %d, sz %d", ttl, sz)
+        suffix = chunks[-1][-(ttl - sz):]
+        chunks[-1] = chunks[-1][:-(ttl - sz)]
+        self.log.debug("suffix %d '%s'", ttl - sz, suffix)
         return ''.join(chunks)
 
