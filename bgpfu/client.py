@@ -26,6 +26,7 @@ class IRRClient(object):
     def connect(self):
         self.sckt = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sckt.connect((self.host, self.port))
+        self.sckt.send('!nBGPFU-v%s\n' % __version__)
         if self.keepalive:
             self.sckt.send('!!\n')
 
