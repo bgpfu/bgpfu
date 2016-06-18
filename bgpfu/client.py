@@ -28,11 +28,11 @@ class IRRClient(object):
     def connect(self):
         self.sckt = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sckt.connect((self.host, self.port))
-#        self.sckt.send('!nBGPFU-v%s\n' % get_distribution('bgpfu').version)
-# TODO need to read a C state
 
         if self.keepalive:
             self.sckt.send('!!\n')
+
+        self.query('!nBGPFU-v%s\n' % get_distribution('bgpfu').version)
 
     def query(self, q):
         ttl = 0
@@ -51,6 +51,10 @@ class IRRClient(object):
 
         chunk = self.sckt.recv(chunk_size)
         state, chunk = chunk.split('\n', 1)
+
+        if state == 'C':
+            return True
+
         self.log.debug("state %s", state)
         match = self.re_res.match(state)
         if not match:
