@@ -13,8 +13,7 @@ def test_parse_response():
     assert 175 == irr.parse_response('A175')
     assert not irr.parse_response('C')
     assert not irr.parse_response('C all ok')
-    with pytest.raises(KeyError):
-        irr.parse_response('D')
+    assert False == irr.parse_response('D')
     with pytest.raises(KeyError):
         irr.parse_response('E')
     with pytest.raises(RuntimeError) as e:
