@@ -31,6 +31,22 @@ def raw(ctx, query, **kwargs):
 
     bgpfuc = bgpfu.client.IRRClient()
     with bgpfuc as c:
-        data = c.query(query + '\n')
+        data = c.query(query)
+        print(data)
+
+
+@cli.command()
+@click.pass_context
+#@connect_options
+@common_options
+@click.argument('asn', nargs=1)
+def as_prefix(ctx, asn, **kwargs):
+    """ raw irr query """
+    if kwargs.get('debug', False):
+        logging.basicConfig(level=logging.DEBUG)
+
+    bgpfuc = bgpfu.client.IRRClient()
+    with bgpfuc as c:
+        data = c.as_prefix(asn)
         print(data)
 

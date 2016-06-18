@@ -35,6 +35,7 @@ class IRRClient(object):
         self.query('!nBGPFU-v%s\n' % get_distribution('bgpfu').version)
 
     def query(self, q):
+        q = q + '\n'
         ttl = 0
         sz = len(q)
         while ttl < sz:
@@ -83,4 +84,5 @@ class IRRClient(object):
 
 
     def as_prefix(self, asn):
-        pass
+        print('!gAS%d' % int(asn))
+        return self.query('!gAS%d' % int(asn)).split()
