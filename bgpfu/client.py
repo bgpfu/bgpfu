@@ -13,7 +13,7 @@ class IRRClient(object):
         self.host = 'rr.ntt.net'
         self.port = 43
 
-        self.re_res = re.compile('(?P<state>[ACD])(?P<len>\d+)$')
+        self.re_res = re.compile('(?P<state>[ACDEF])(?P<len>\d*)(?P<msg>[\w\s]*)$')
 
         self.log = logging.getLogger(__name__)
 
@@ -34,6 +34,30 @@ class IRRClient(object):
 
         self.query('!nBGPFU-v%s\n' % get_distribution('bgpfu').version)
 
+    def parse_response(self, response):
+        self.log.debug("response %s", response)
+        match = self.re_res.match(response)
+        if not match:
+            raise RuntimeError("invalid response '%s'" % (response,))
+
+        state = match.group('state')
+        if state == 'A':
+            return int(match.group('len'))
+        elif state == 'C':
+            return False
+        elif state == 'D':
+            raise KeyError("key not found")
+        elif state == 'E':
+            raise KeyError("multiple copies of key in database")
+        elif state == 'F':
+            if match.group('msg'):
+                msg = match.group('msg').strip()
+            else:
+                msg = 'unknown error'
+            raise RuntimeError(msg)
+
+        raise RuntimeError("invalid response '%s'" % (response,))
+
     def query(self, q):
         q = q + '\n'
         ttl = 0
@@ -51,17 +75,12 @@ class IRRClient(object):
         chunk_size = 4096
 
         chunk = self.sckt.recv(chunk_size)
-        state, chunk = chunk.split('\n', 1)
+        response, chunk = chunk.split('\n', 1)
 
-        if state == 'C':
+        sz = self.parse_response(response)
+        if not sz:
             return True
 
-        self.log.debug("state %s", state)
-        match = self.re_res.match(state)
-        if not match:
-            raise RuntimeError("invalid response '%s'" % (chunk,))
-
-        sz = int(match.group('len'))
         ttl = len(chunk)
         chunks.append(chunk)
 
@@ -82,7 +101,10 @@ class IRRClient(object):
         self.log.debug("suffix %d '%s'", ttl - sz, suffix)
         return ''.join(chunks)
 
+    def set_sources(self, sources):
+        return self.query('!s%s' % sources)
 
-    def as_prefix(self, asn):
-        print('!gAS%d' % int(asn))
-        return self.query('!gAS%d' % int(asn)).split()
+    def as_prefix(self, obj):
+        return self.query('!gAS%s' % obj).split()
+
+

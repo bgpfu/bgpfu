@@ -39,14 +39,18 @@ def raw(ctx, query, **kwargs):
 @click.pass_context
 #@connect_options
 @common_options
+@click.option('--sources', help='use only specified sources (default is all)')
 @click.argument('asn', nargs=1)
 def as_prefix(ctx, asn, **kwargs):
-    """ raw irr query """
+    """ get prefix list """
     if kwargs.get('debug', False):
         logging.basicConfig(level=logging.DEBUG)
 
     bgpfuc = bgpfu.client.IRRClient()
     with bgpfuc as c:
+        if kwargs.get('sources', False):
+            c.set_sources(kwargs['sources'])
+
         data = c.as_prefix(asn)
-        print(data)
+        print("\n".join(data))
 
