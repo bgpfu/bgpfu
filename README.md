@@ -8,7 +8,3 @@ BGP FU can ingest data from various sources such as IRRs/RPKI/other, transpose t
 according to your policy preferences, and generate partial router configurations.
 
 The jinja2 templating language is used to describe vendor specific output.
-
-<p align="center">
-    <img src="https://raw.githubusercontent.com/NLNOG/bgpfu/master/docs/bgpfu-logo.png" />
-</p>
