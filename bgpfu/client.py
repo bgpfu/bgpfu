@@ -81,3 +81,6 @@ class IRRClient(object):
         self.log.debug("suffix %d '%s'", ttl - sz, suffix)
         return ''.join(chunks)
 
+
+    def as_prefix(self, asn):
+        pass
