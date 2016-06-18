@@ -40,8 +40,10 @@ def raw(ctx, query, **kwargs):
 #@connect_options
 @common_options
 @click.option('--sources', help='use only specified sources (default is all)')
+@click.option('-4', 'proto', help="use IPv4", flag_value='4', default=True)
+@click.option('-6', 'proto', help='use IPv6', flag_value='6')
 @click.argument('as-set', nargs=-1)
-def prefixlist(ctx, as_set, **kwargs):
+def prefixlist(ctx, as_set, proto, **kwargs):
     """ get prefix list for specified as-sets """
     if kwargs.get('debug', False):
         logging.basicConfig(level=logging.DEBUG)
@@ -51,13 +53,8 @@ def prefixlist(ctx, as_set, **kwargs):
     with bgpfuc as c:
         if kwargs.get('sources', False):
             c.set_sources(kwargs['sources'])
+        prefixes = c.prefixlist(as_set, proto)
 
-        all_sets = []
-        for each in as_set:
-            all_sets += c.get_set(each)
-
-        for each in all_sets:
-            prefixes |= set(c.prefix4(each))
         print("\n".join(sorted(prefixes)))
 
 

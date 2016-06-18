@@ -46,6 +46,7 @@ class IRRClient(object):
         elif state == 'C':
             return False
         elif state == 'D':
+            return False
             raise KeyError("key not found")
         elif state == 'E':
             raise KeyError("multiple copies of key in database")
@@ -79,7 +80,7 @@ class IRRClient(object):
 
         sz = self.parse_response(response)
         if not sz:
-            return True
+            return
 
         ttl = len(chunk)
         chunks.append(chunk)
@@ -115,10 +116,35 @@ class IRRClient(object):
             q = q + ',1'
         return self.query(q).split()
 
-    def prefix4(self, obj):
-        return self.query('!g%s' % obj).split()
+    def prefixlist(self, as_set, proto=4):
+        """ get prefix list for specified as-set(s) """
 
-    def prefix6(self, obj):
-        return self.query('!6%s' % obj).split()
+        if isinstance(as_set, basestring):
+            as_set = [as_set]
 
+        all_sets = []
+        for each in as_set:
+            all_sets += self.get_set(each)
+
+        prefixes = set()
+        for each in all_sets:
+            prefixes |= set(self.routes(each, proto))
+
+        return prefixes
+
+    def routes(self, obj, proto=4):
+        """ get routes for specified object """
+        proto = int(proto)
+        if proto == 4:
+            q = '!g'
+        elif proto == 6:
+            q = '!6'
+        else:
+            raise ValueError("unknown protocol '%s'" % str(proto))
+
+        q += obj
+        prefixes = self.query(q)
+        if prefixes:
+            return prefixes.split()
+        return []
 
