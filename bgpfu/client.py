@@ -32,7 +32,7 @@ class IRRClient(object):
         if self.keepalive:
             self.sckt.send('!!\n')
 
-        self.query('!nBGPFU-v%s\n' % get_distribution('bgpfu').version)
+        self.query('!nBGPFU-%s' % get_distribution('bgpfu').version)
 
     def parse_response(self, response):
         self.log.debug("response %s", response)
@@ -102,9 +102,23 @@ class IRRClient(object):
         return ''.join(chunks)
 
     def set_sources(self, sources):
+        """ set sources to the specified list """
         return self.query('!s%s' % sources)
 
-    def as_prefix(self, obj):
-        return self.query('!gAS%s' % obj).split()
+    def get_set(self, obj, expand=True):
+        """
+        Return members of an as-set or route-set.
+        if expand is true, also recursively expand members of all sets within the named set.
+        """
+        q = '!i' + obj
+        if expand:
+            q = q + ',1'
+        return self.query(q).split()
+
+    def prefix4(self, obj):
+        return self.query('!g%s' % obj).split()
+
+    def prefix6(self, obj):
+        return self.query('!6%s' % obj).split()
 
 
