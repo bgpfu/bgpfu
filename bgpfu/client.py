@@ -1,5 +1,6 @@
 
 import logging
+from pkg_resources import get_distribution
 import re
 import socket
 
@@ -27,7 +28,9 @@ class IRRClient(object):
     def connect(self):
         self.sckt = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sckt.connect((self.host, self.port))
-        self.sckt.send('!nBGPFU-v%s\n' % __version__)
+#        self.sckt.send('!nBGPFU-v%s\n' % get_distribution('bgpfu').version)
+# TODO need to read a C state
+
         if self.keepalive:
             self.sckt.send('!!\n')
 
