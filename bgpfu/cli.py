@@ -39,6 +39,7 @@ def raw(ctx, query, **kwargs):
 @click.pass_context
 #@connect_options
 @common_options
+@click.option('--aggregate/--no-aggregate', '-A', help='aggregate prefixes', is_flag=True, default=True)
 @click.option('--sources', help='use only specified sources (default is all)')
 @click.option('-4', 'proto', help="use IPv4", flag_value='4', default=True)
 @click.option('-6', 'proto', help='use IPv6', flag_value='6')
@@ -55,6 +56,7 @@ def prefixlist(ctx, as_set, proto, **kwargs):
             c.set_sources(kwargs['sources'])
         prefixes = c.prefixlist(as_set, proto)
 
-        print("\n".join(sorted(prefixes)))
+        if kwargs.get('aggregate', True):
+            prefixes = prefixes.aggregate()
 
-
+        print("\n".join(prefixes.str_list()))

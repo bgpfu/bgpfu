@@ -34,8 +34,6 @@ def _do_aggregate(prefixlist):
 
             # try joining 2
             supernet = current.supernet()
-            print "super", supernet
-            print "excluses", supernet.address_exclude(current)
             if supernet == pfx.supernet():
                 current = supernet
                 continue
@@ -68,18 +66,19 @@ class PrefixList(collections.MutableSequence):
         else:
             self._prefixes = []
 
+    def _check_val(self, v):
+        if not isinstance(v, (ipaddress.IPv4Network, ipaddress.IPv6Network)):
+            return ipaddress.ip_network(unicode(v))
+        return v
+
     def __getitem__(self, i):
         return self._prefixes[i]
 
     def __setitem__(self, i, v):
-        if not isinstance(v, ipaddress._BaseNetwork):
-            v = ipaddress.ip_network(unicode(v))
-        self._prefixes[i] = v
+        self._prefixes[i] = self._check_val(v)
 
     def insert(self, i, v):
-        if not isinstance(v, ipaddress._BaseNetwork):
-            v = ipaddress.ip_network(unicode(v))
-        self._prefixes.insert(i, v)
+        self._prefixes.insert(i, self._check_val(v))
 
     def __delitem__(self, i):
         del self._prefixes[i]
@@ -107,9 +106,6 @@ class PrefixList(collections.MutableSequence):
     def str_list(self):
         return map(str, self._prefixes)
 
-    def _do_aggregate(self):
-        pass
-
     def aggregate(self):
         'returns a PrefixList containing the result of aggregating the list'
 
@@ -123,5 +119,4 @@ class PrefixList(collections.MutableSequence):
         v4 = _do_aggregate(v4)
         v6 = _do_aggregate(v6)
         return PrefixList(v4 + v6)
-
 

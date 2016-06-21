@@ -1,4 +1,6 @@
+from __future__ import absolute_import
 
+from bgpfu.inet import PrefixList
 import logging
 from pkg_resources import get_distribution
 import re
@@ -126,11 +128,11 @@ class IRRClient(object):
         for each in as_set:
             all_sets += self.get_set(each)
 
-        prefixes = set()
+        prefixes = []
         for each in all_sets:
-            prefixes |= set(self.routes(each, proto))
-
-        return prefixes
+            prefixes += self.routes(each, proto)
+        # set for uniq
+        return PrefixList(set(prefixes))
 
     def routes(self, obj, proto=4):
         """ get routes for specified object """

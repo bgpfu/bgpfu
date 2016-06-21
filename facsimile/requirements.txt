@@ -3,4 +3,3 @@ Jinja2==2.8
 click>=5.1
 ipaddress==1.0.16
 munge==0.1.7
-py-radix==0.9.6
