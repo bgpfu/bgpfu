@@ -21,7 +21,7 @@ class IRRClient(object):
         self.connect()
         return self
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, typ, value, traceback):
         self.sckt.shutdown(socket.SHUT_RDWR)
         self.sckt.close()
 
@@ -46,8 +46,8 @@ class IRRClient(object):
         elif state == 'C':
             return False
         elif state == 'D':
+            self.log.warning("skipping key not found")
             return False
-            raise KeyError("key not found")
         elif state == 'E':
             raise KeyError("multiple copies of key in database")
         elif state == 'F':
