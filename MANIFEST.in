@@ -1,3 +1,4 @@
 include LICENSE
 recursive-include facsimile *.txt
+recursive-include bgpfu/templates *.j2
 include facsimile/VERSION
