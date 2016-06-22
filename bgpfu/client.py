@@ -116,7 +116,7 @@ class IRRClient(object):
         q = '!i' + obj
         if expand:
             q = q + ',1'
-        return self.query(q).split()
+        return set(self.query(q).split())
 
     def prefixlist(self, as_set, proto=4):
         """ get prefix list for specified as-set(s) """
