@@ -1,0 +1,8 @@
+no prefix-set {{ name }}
+prefix-set {{ name }}
+{% for prefix in prefixlist %}
+ {% if not prefixlist.last %}
+ {{ prefix }},
+ {% else %}
+ {{ prefix }}
+end-set
