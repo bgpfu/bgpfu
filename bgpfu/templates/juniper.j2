@@ -1,0 +1,8 @@
+policy-options {
+replace:
+ prefix-list {{ name }} {
+{% for prefix in prefixlist %}
+    {{ prefix }};
+{% end %}
+ }
+}
