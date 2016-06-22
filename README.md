@@ -1,4 +1,6 @@
 [![Build Status](https://travis-ci.org/NLNOG/bgpfu.svg?branch=master)](https://travis-ci.org/NLNOG/bgpfu)
+[![Code Health](https://landscape.io/github/NLNOG/bgpfu/master/landscape.svg?style=flat)](https://landscape.io/github/NLNOG/bgpfu/master)
+[![Codecov](https://img.shields.io/codecov/c/github/NLNOG/bgpfu.svg?maxAge=2592000)](https://codecov.io/gh/NLNOG/bgpfu)
 
 # BGP FU
 
