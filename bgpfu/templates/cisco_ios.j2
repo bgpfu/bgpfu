@@ -1,0 +1,13 @@
+{#
+
+Cisco IOS configuration template for prefix-lists
+
+#}
+!
+{% for prefix in prefixlist %}
+{% if afi is "ipv4" %}
+ip prefix-list {{ prefix_list_name }} permit {{ prefix }}
+{% else %}
+ipv6 prefix-list {{ prefix_list_name }} permit {{ prefix }}
+{{ end }}
+!
