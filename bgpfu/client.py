@@ -108,31 +108,23 @@ class IRRClient(object):
         """ set sources to the specified list """
         return self.query('!s%s' % sources)
 
-    def get_set(self, obj, expand=True):
+    def get_set(self, objs, expand=True):
         """
         Return members of an as-set or route-set.
         if expand is true, also recursively expand members of all sets within the named set.
         """
-        q = '!i' + obj
-        if expand:
-            q = q + ',1'
-        return set(self.query(q).split())
+        if isinstance(objs, basestring):
+            objs = (objs,)
 
-    def prefixlist(self, as_set, proto=4):
-        """ get prefix list for specified as-set(s) """
+        sets = []
 
-        if isinstance(as_set, basestring):
-            as_set = [as_set]
+        for each in objs:
+            q = '!i' + each
+            if expand:
+                q = q + ',1'
+            sets += self.query(q).split()
 
-        all_sets = []
-        for each in as_set:
-            all_sets += self.get_set(each)
-
-        prefixes = []
-        for each in all_sets:
-            prefixes += self.routes(each, proto)
-        # set for uniq
-        return PrefixList(set(prefixes))
+        return set(sets)
 
     def routes(self, obj, proto=4):
         """ get routes for specified object """
@@ -149,4 +141,15 @@ class IRRClient(object):
         if prefixes:
             return prefixes.split()
         return []
+
+    def prefixlist(self, as_set, proto=4):
+        """ get prefix list for specified as-set(s) """
+
+        all_sets = self.get_set(as_set)
+
+        prefixes = []
+        for each in all_sets:
+            prefixes += self.routes(each, proto)
+        # set for uniq
+        return PrefixList(set(prefixes))
 
