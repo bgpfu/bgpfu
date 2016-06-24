@@ -3,12 +3,12 @@ from __future__ import print_function
 
 import click
 import bgpfu.client
+from bgpfu.output import Output
 import logging
 
 
-def get_output_formats():
-    # TODO pkg_resource ls and plugins?
-    return ('cisco_ios', 'cisco_iox', 'juniper', 'txt')
+# global output formatter
+outfmt = Output()
 
 
 def common_options(f):
@@ -22,7 +22,7 @@ def as_set_options(f):
 
 
 def output_options(f):
-    f = click.option('--output-format', '-f', help='output format', type=click.Choice(get_output_formats()), default='txt', show_default=True)(f)
+    f = click.option('--output-format', '-f', help='output format', type=click.Choice(outfmt.available_formats), default='txt', show_default=True)(f)
     f = click.option('--output', '-o', help='output file', default='-')(f)
     return f
 
@@ -77,7 +77,7 @@ def as_set(ctx, as_set, **kwargs):
 @click.option('--6', '-6', 'proto', help='use IPv6', flag_value='6')
 @click.argument('as-set', nargs=-1)
 @click.pass_context
-def prefixlist(ctx, as_set, output, proto, **kwargs):
+def prefixlist(ctx, as_set, output, output_format, proto, **kwargs):
     """ get prefix list for specified as-sets """
     if kwargs.get('debug', False):
         logging.basicConfig(level=logging.DEBUG)
@@ -93,7 +93,5 @@ def prefixlist(ctx, as_set, output, proto, **kwargs):
             prefixes = prefixes.aggregate()
 
         with click.open_file(output, 'w') as fobj:
-            if kwargs['output_format'] == 'txt':
-                fobj.write('\n'.join(prefixes.str_list()))
-                fobj.write('\n')
+            outfmt.write(output_format, fobj, prefixes.str_list())
 
