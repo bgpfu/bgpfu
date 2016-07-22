@@ -1,7 +1,6 @@
 
 import inspect
 import pkg_resources
-import os
 import re
 
 
