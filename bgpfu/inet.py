@@ -8,8 +8,7 @@ def _try_combine(aggregate, current):
     if aggregate and aggregate[-1]:
         supernet = aggregate[-1].supernet()
         if supernet == current.supernet():
-            aggregate.pop()
-            aggregate.append(supernet)
+            aggregate[-1] = supernet
             return True
     return False
 
@@ -36,11 +35,6 @@ def _do_aggregate(prefixlist):
             supernet = current.supernet()
             if supernet == pfx.supernet():
                 current = supernet
-                continue
-
-            # try joining with last one pushed
-            if _try_combine(aggregate, current):
-                current = None
                 continue
 
             # nothing to combine, shift
@@ -91,9 +85,11 @@ class PrefixList(collections.MutableSequence):
             return self._prefixes == other._prefixes
         raise TypeError('object not PrefixList type')
 
+    def __ne__(self, other):
+        return not self == other
+
     def __str__(self):
         return str(self._prefixes)
-
 
     @property
     def ipv4(self):

@@ -1,4 +1,5 @@
 
+import ipaddress
 import pytest
 from bgpfu.inet import PrefixList
 
@@ -31,6 +32,14 @@ def test_prefixlist_eq():
     pfx1.pop()
     assert pfx0 != pfx1
 
+    with pytest.raises(TypeError) as e:
+        pfx0 != "string"
+    assert "object not PrefixList type" == e.value.message
+
+    with pytest.raises(TypeError) as e:
+        pfx0 != "string"
+    assert "object not PrefixList type" == e.value.message
+
 
 def test_prefixlist_append():
     pfx0 = PrefixList(prefixes0)
@@ -44,9 +53,51 @@ def test_prefixlist_append():
     assert pfx0 == pfx1
 
 
+def test_prefixlist_append():
+    pfx0 = PrefixList(prefixes0)
+    pfx1 = PrefixList()
+
+    for each in prefixes0:
+        pfx1.append(each)
+
+    print pfx0
+    print pfx1
+    assert pfx0 == pfx1
+
+
+def test_prefixlist_set():
+    pfx0 = PrefixList(prefixes0)
+    pfx1 = PrefixList(prefixes0)
+    assert pfx0 == pfx1
+
+    idx = len(prefixes0) - 1
+    pfx1[idx] = prefixes0[idx]
+    assert pfx0 == pfx1
+
+    pfx1[idx] = pfx0[idx]
+    assert pfx0 == pfx1
+
+# FIXME - should check values and not object refs
+#    pfx1[idx] = ipaddress.ip_network(prefixes0[idx])
+#    assert pfx0 == pfx1
+
+
 def test_prefixlist_str_list():
     pfx0 = PrefixList(prefixes0)
     assert prefixes0 == pfx0.str_list()
+
+
+def test_aggregate_single():
+    prefixlist = [
+        '10.0.1.0/24',
+    ]
+    expected = [
+        '10.0.1.0/24',
+    ]
+    pfx = PrefixList(prefixlist)
+
+    assert expected == pfx.aggregate().str_list()
+    assert PrefixList(prefixlist) == pfx
 
 
 def test_aggregate_super():
@@ -79,6 +130,7 @@ def test_aggregate_combine():
     assert expected == pfx.aggregate().str_list()
     assert PrefixList(prefixlist) == pfx
 
+
 def test_aggregate_combine_multi():
     prefixlist = [
         '10.0.0.0/24',
@@ -93,6 +145,7 @@ def test_aggregate_combine_multi():
 
     assert expected == pfx.aggregate().str_list()
     assert PrefixList(prefixlist) == pfx
+
 
 def test_aggregate_combine_multimore():
     prefixlist = [
@@ -112,6 +165,7 @@ def test_aggregate_combine_multimore():
 
     assert expected == pfx.aggregate().str_list()
     assert PrefixList(prefixlist) == pfx
+
 
 def test_aggregate_combine_default():
     prefixlist = [
