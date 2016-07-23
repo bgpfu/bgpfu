@@ -37,7 +37,7 @@ class Output(object):
         return pkg_resources.resource_string('bgpfu', filename)
 
     def _init_jinja(self, tmpl_name):
-        tmpl = self.load_file(template + '.j2')
+        tmpl = self.load_file(tmpl_name + '.j2')
 
     def output_juniper(self, jobj, data):
         eng = self._init_jinja('juniper')
