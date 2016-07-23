@@ -14,4 +14,4 @@ according to your policy preferences, and generate partial router configurations
 
 The jinja2 templating language is used to describe vendor specific output.
 
-
+![BGPFU Logo](/../gh-pages/images/BGP-FU-Logo-RGB.png?raw=true "BGPFU")
