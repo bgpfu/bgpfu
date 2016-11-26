@@ -10,6 +10,11 @@ branches:
 env:
   - TOX_ENV=py27
 
+before_install:
+  - sudo apt-get -qq update
+  - python -m pip install -U pip
+  - python -m easy_install -U setuptools
+
 install:
   - pip install codecov
   - pip install tox
