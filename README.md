@@ -3,8 +3,8 @@
 
 [![Build Status](https://travis-ci.org/bgpfu/bgpfu.svg?branch=master)](https://travis-ci.org/bgpfu/bgpfu)
 [![Code Health](https://landscape.io/github/bgpfu/bgpfu/master/landscape.svg?style=flat)](https://landscape.io/github/bgpfu/bgpfu/master)
-[![Codecov](https://img.shields.io/codecov/c/github/bgpfu/bgpfu.svg?maxAge=2592000)](https://codecov.io/gh/bgpfu/bgpfu)
-[![Requires.io](https://img.shields.io/requires/github/bgpfu/bgpfu.svg?maxAge=2592000)](https://requires.io/github/bgpfu/bgpfu/requirements)
+[![Codecov](https://img.shields.io/codecov/c/github/bgpfu/bgpfu.svg?maxAge=3600)](https://codecov.io/gh/bgpfu/bgpfu)
+[![Requires.io](https://img.shields.io/requires/github/bgpfu/bgpfu.svg?maxAge=3600)](https://requires.io/github/bgpfu/bgpfu/requirements)
 
 
 BGP FU is a toolbelt to assist with the automatic creation of safe prefix-filters.
