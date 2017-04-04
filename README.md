@@ -14,4 +14,8 @@ according to your policy preferences, and generate partial router configurations
 
 The jinja2 templating language is used to describe vendor specific output.
 
+# Contact
+
+Join us on `irc.terahertz.net` in `#BGPFU`
+
 ![BGPFU Logo](/../gh-pages/images/BGP-FU-Logo-RGB-resized.png?raw=true "BGPFU")
