@@ -23,8 +23,8 @@ setup(
     packages=[
         'bgpfu',
     ],
-    url='https://github.com/NLNOG/bgpfu',
-    download_url='https://github.com/NLNOG/bgpfu/%s' % version,
+    url='https://github.com/bgpfu/bgpfu',
+    download_url='https://github.com/bgpfu/bgpfu/%s' % version,
     include_package_data=True,
     install_requires=requirements,
     test_requires=test_requirements,
