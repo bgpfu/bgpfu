@@ -20,6 +20,7 @@ from __future__ import print_function
 import click
 import bgpfu.client
 from bgpfu.output import Output
+from bgpfu.prefixlist import SimplePrefixList as PrefixList
 import logging
 
 
@@ -38,7 +39,8 @@ def as_set_options(f):
 
 
 def output_options(f):
-    f = click.option('--output-format', '-f', help='output format', type=click.Choice(outfmt.available_formats), default='txt', show_default=True)(f)
+    f = click.option('--output-format', '-f', help='output format',
+        type=click.Choice(outfmt.available_formats), default='txt', show_default=True)(f)
     f = click.option('--output', '-o', help='output file', default='-')(f)
     return f
 
@@ -78,7 +80,7 @@ def as_set(ctx, as_set, **kwargs):
         logging.basicConfig(level=logging.DEBUG)
     bgpfuc = bgpfu.client.IRRClient()
     with bgpfuc as c:
-        sets = c.get_set(as_set)
+        sets = c.get_sets(as_set)
 
     print("\n".join(sets))
 
@@ -98,12 +100,15 @@ def prefixlist(ctx, as_set, output, output_format, proto, **kwargs):
     if kwargs.get('debug', False):
         logging.basicConfig(level=logging.DEBUG)
 
-    prefixes = set()
+    prefixes = PrefixList()
     bgpfuc = bgpfu.client.IRRClient()
     with bgpfuc as c:
         if kwargs.get('sources', False):
             c.set_sources(kwargs['sources'])
-        prefixes = c.prefixlist(as_set, proto)
+#        prefixes = c.get_prefixes(as_set, proto)
+
+        for chunk in c.iter_prefixes(as_set, proto):
+            prefixes.add_iter(chunk)
 
         if kwargs.get('aggregate', True):
             prefixes = prefixes.aggregate()
@@ -111,3 +116,4 @@ def prefixlist(ctx, as_set, output, output_format, proto, **kwargs):
         with click.open_file(output, 'w') as fobj:
             outfmt.write(output_format, fobj, prefixes.str_list())
 
+        print("LEN {}".format(len(prefixes)))
