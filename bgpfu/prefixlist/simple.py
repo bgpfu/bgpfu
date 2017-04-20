@@ -67,8 +67,11 @@ def _do_aggregate(prefixlist):
         aggregate = []
 
 
-class PrefixList(collections.MutableSequence):
-
+class SimplePrefixList(collections.MutableSequence):
+    """
+    Simple PrefixList implemenatation using collections
+    *NOTE* loses prefix length info on aggregate
+    """
     def __init__(self, prefixes=None):
         if prefixes:
             self._prefixes = map(ipaddress.ip_network, map(unicode, prefixes))
@@ -88,6 +91,10 @@ class PrefixList(collections.MutableSequence):
 
     def insert(self, i, v):
         self._prefixes.insert(i, self._check_val(v))
+
+    def add_iter(self, it):
+        for v in it:
+            self._prefixes.append(self._check_val(v))
 
     def __delitem__(self, i):
         del self._prefixes[i]
@@ -121,7 +128,7 @@ class PrefixList(collections.MutableSequence):
         'returns a PrefixList containing the result of aggregating the list'
 
         if len(self._prefixes) == 1:
-            return PrefixList(self._prefixes)
+            return self.__class__(self._prefixes)
 
         #v4 = sorted(self._prefixes)
         v4 = [p for p in self._prefixes if p.version == 4]
@@ -129,5 +136,5 @@ class PrefixList(collections.MutableSequence):
 
         v4 = _do_aggregate(v4)
         v6 = _do_aggregate(v6)
-        return PrefixList(v4 + v6)
+        return self.__class__(v4 + v6)
 
