@@ -9,6 +9,7 @@ before_install:
   - sudo apt-get -qq update
 install:
   - pip install -U pip
+  - pip install -U setuptools
   - pip install tox-travis
   - pip install codecov
 script:
