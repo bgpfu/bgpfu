@@ -37,12 +37,49 @@ def test_prefixset_init_dict():
 
 
 def test_prefixset_init_str():
-    data4 = '10.0.0.0/8^16-24'
-    data6 = '2001:db8::/32^48-64'
-    strings = (data4, data6)
+    strings = ['10.0.0.0/8^16-24', '2001:db8::/32^48-64']
     for s in strings:
         ps = PrefixSet(s)
         assert ps
+
+
+def test_prefix_set_init_str_invalid():
+    strings = ['10.0.0.1/8', '2000:g::/32', '10.0.0.0/8^8', '']
+    for s in strings:
+        try:
+            ps = PrefixSet(s)
+        except Exception as e:
+            assert isinstance(e, ValueError)
+
+
+def test_prefixset_init_dict_invalid_af():
+    dicts = [
+        {'ipv5': [{'prefix': '10.0.0.0/8'}]},
+        {'opv6': [{'prefix': '2001:db8::/32'}]}
+    ]
+    for d in dicts:
+        ps = PrefixSet(d)
+        assert len(ps) == 0
+
+
+def test_prefixset_init_dict_invalid_prefix():
+    dicts = [
+        {'ipv4': [{'prefix': '10.0.0.1/8'}]},
+        {'ipv6': [{'prefix': '2001:g::/32'}]}
+    ]
+    for d in dicts:
+        ps = PrefixSet(d)
+        assert len(ps) == 0
+
+
+def test_prefixset_init_dict_af_mismatch():
+    dicts = [
+        {'ipv6': [{'prefix': '10.0.0.0/8', 'greater-equal': 16, 'less-equal': 24}]},
+        {'ipv4': [{'prefix': '2001:db8::/32', 'greater-equal': 48, 'less-equal': 64}]}
+    ]
+    for d in dicts:
+        ps = PrefixSet(d)
+        assert len(ps) == 0
 
 
 def test_prefixset_len():

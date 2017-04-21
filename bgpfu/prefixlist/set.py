@@ -29,9 +29,10 @@ class PrefixSet(BaseObject, Set):
         for af in data:
             # determine the ip address version that we're dealing with
             try:
-                version = int(re.match(r'^ipv(\d)', af).group(1))
-            except ValueError:
+                version = int(re.match(r'^ipv(4|6)', af).group(1))
+            except (ValueError, AttributeError):
                 self.log.warning(msg="invalid address-family %s" % af)
+                continue
             self.log.debug(msg="adding %s prefixes to set" % af)
             # create a temporary list to hold index ranges
             temp = list()
@@ -43,6 +44,7 @@ class PrefixSet(BaseObject, Set):
                     prefix, root = self.index_of(entry["prefix"])
                 except ValueError as e:
                     self.log.warning(msg=e.message)
+                    continue
                 # check that the prefix has the correct address version
                 if prefix.version != version:
                     self.log.warning(msg="prefix %s not of version %d" % (prefix, version))
