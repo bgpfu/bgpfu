@@ -12,6 +12,8 @@ class PrefixSet(BaseObject, Set):
         self.log_init()
         # if we weren't given a dict, try and parse it out
         # as prefix/len^min-max into the expected dict structure
+        if data is None:
+            data = {}
         if not isinstance(data, dict):
             try:
                 data = self.parse_prefix_range(expr=data)
@@ -186,6 +188,20 @@ class PrefixSet(BaseObject, Set):
             for lower, upper in self.sets(af):
                 for index in range(lower, upper):
                     yield self.indexed_by(index=index, af=af)
+
+    def meta(self, key=None, strict=False):
+        if key:
+            try:
+                return self._meta[key]
+            except KeyError as e:
+                if strict:
+                    self.log.error(msg=e.message)
+                    raise e
+                else:
+                    self.log.debug(msg=e.message)
+                    return None
+        else:
+            return self._meta
 
     @staticmethod
     def index_of(prefix=None):
