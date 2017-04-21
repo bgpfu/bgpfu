@@ -1,7 +1,7 @@
 
 import ipaddress
 import pytest
-from bgpfu.inet import PrefixList
+from bgpfu.prefixlist import SimplePrefixList as PrefixList
 
 
 prefixes0 = [
