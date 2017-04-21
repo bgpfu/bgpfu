@@ -55,15 +55,20 @@ class PrefixSet(BaseObject, Set):
                 h = prefix.max_prefixlen
                 self.log.debug(msg="setting base index of prefix: %s = %d" % (prefix, root))
                 # check if we have been given min and max prefix-lengths
+                m_set = False
                 try:
                     m = max(int(entry["greater-equal"]), l)
+                    m_set = True
                 except (KeyError, ValueError):
                     m = l
                 self.log.debug(msg="min-length set to %d" % m)
                 try:
                     n = min(int(entry["less-equal"]), h)
                 except (KeyError, ValueError):
-                    n = m
+                    if m_set:
+                        n = h
+                    else:
+                        n = m
                 self.log.debug(msg="max-length set to %d" % n)
                 self.log.debug(msg="traversing subtree from index %d" % root)
                 # calculate the total depth of the iteration

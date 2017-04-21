@@ -82,6 +82,56 @@ def test_prefixset_init_dict_af_mismatch():
         assert len(ps) == 0
 
 
+def test_prefixset_init_min_length_invalid():
+    dicts = [
+        {'ipv4': [{'prefix': '10.0.0.0/16', 'greater-equal': 8, 'less-equal': 16}]},
+        {'ipv6': [{'prefix': '2001:db8::/48', 'greater-equal': 32, 'less-equal': 48}]}
+    ]
+    for d in dicts:
+        ps = PrefixSet(d)
+        assert len(ps) == 1
+
+
+def test_prefixset_init_max_length_invalid():
+    dicts = [
+        {'ipv4': [{'prefix': '10.0.0.0/32', 'greater-equal': 32, 'less-equal': 48}]},
+        {'ipv6': [{'prefix': '2001:db8::/128', 'greater-equal': 128, 'less-equal': 256}]}
+    ]
+    for d in dicts:
+        ps = PrefixSet(d)
+        assert len(ps) == 1
+
+
+def test_prefixset_init_length_missing():
+    dicts = [
+        {'ipv4': [{'prefix': '10.0.0.0/8'}]},
+        {'ipv6': [{'prefix': '2001:db8::/32'}]}
+    ]
+    for d in dicts:
+        ps = PrefixSet(d)
+        assert len(ps) == 1
+
+
+def test_prefixset_init_min_length_missing():
+    dicts = [
+        {'ipv4': [{'prefix': '10.0.0.0/8', 'less-equal': 8}]},
+        {'ipv6': [{'prefix': '2001:db8::/32', 'less-equal': 32}]}
+    ]
+    for d in dicts:
+        ps = PrefixSet(d)
+        assert len(ps) == 1
+
+
+def test_prefixset_init_max_length_missing():
+    dicts = [
+        {'ipv4': [{'prefix': '10.0.0.0/30', 'greater-equal': 31}]},
+        {'ipv6': [{'prefix': '2001:db8::/126', 'greater-equal': 127}]}
+    ]
+    for d in dicts:
+        ps = PrefixSet(d)
+        assert len(ps) == 6
+
+
 def test_prefixset_len():
     p4, l4, m4, n4 = '10.0.0.0', 8, 16, 24
     prefix4 = "%s/%d" % (p4, l4)
