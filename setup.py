@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 version = open('facsimile/VERSION').read().strip()
 requirements = open('facsimile/requirements.txt').read().split("\n")
@@ -20,18 +20,20 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Topic :: Internet',
     ],
-    packages=[
-        'bgpfu',
-    ],
+    packages=find_packages(
+        include=[
+            'bgpfu',
+            'bgpfu.*'
+        ]
+    ),
     url='https://github.com/bgpfu/bgpfu',
     download_url='https://github.com/bgpfu/bgpfu/%s' % version,
     include_package_data=True,
     install_requires=requirements,
     test_requires=test_requirements,
-    entry_points='''
-        [console_scripts]
-        bgpfu=bgpfu.cli:cli
-    ''',
+    entry_points={
+        'console_scripts': ['bgpfu=bgpfu.cli:cli']
+    },
     zip_safe=True,
 )
 
