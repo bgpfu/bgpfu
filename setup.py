@@ -1,15 +1,19 @@
 from setuptools import setup, find_packages
+from codecs import open
 
 version = open('facsimile/VERSION').read().strip()
 requirements = open('facsimile/requirements.txt').read().split("\n")
 test_requirements = open('facsimile/requirements-test.txt').read().split("\n")
+with open('README.rst', encoding='utf-8') as f:
+    long_description = f.read()
 
 setup(
     name='bgpfu',
     version=version,
     author='',
     author_email='',
-    description='bgpfu',
+    description='A toolbelt to assist with the automatic creation of safe prefix-filters',
+    long_description=long_description,
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
@@ -36,4 +40,3 @@ setup(
     },
     zip_safe=True,
 )
-
