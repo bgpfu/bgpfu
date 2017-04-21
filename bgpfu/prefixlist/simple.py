@@ -17,6 +17,8 @@
 import collections
 import ipaddress
 
+from bgpfu.prefixlist import PrefixListBase
+
 
 def _try_combine(aggregate, current):
     'try combining and replacing the last element on the aggregate list'
@@ -67,7 +69,7 @@ def _do_aggregate(prefixlist):
         aggregate = []
 
 
-class SimplePrefixList(collections.MutableSequence):
+class SimplePrefixList(PrefixListBase, collections.MutableSequence):
     """
     Simple PrefixList implemenatation using collections
     *NOTE* loses prefix length info on aggregate
