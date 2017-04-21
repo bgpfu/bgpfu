@@ -24,3 +24,11 @@ script:
 
 after_success:
   - codecov
+
+notifications:
+  irc:
+    channels:
+      - "ircs://irc1.terahertz.net:6697/#bgpfu"
+    on_success: change
+    on_failure: always
+    skip_join: true
