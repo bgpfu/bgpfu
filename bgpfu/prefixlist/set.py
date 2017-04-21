@@ -191,10 +191,8 @@ class PrefixSet(BaseObject, Set):
                 raise f
 
     def prefixes(self):
-        for af in ("ipv4", "ipv6"):
-            for lower, upper in self.sets(af):
-                for index in range(lower, upper):
-                    yield self.indexed_by(index=index, af=af)
+        for version, index in self:
+            yield self.indexed_by(index=index, af="ipv%d" % version)
 
     def meta(self, key=None, strict=False):
         if key:

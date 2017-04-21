@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+from ipaddress import ip_network
 from bgpfu.prefixlist import PrefixSet
 
 
@@ -149,6 +150,31 @@ def test_prefixset_len():
     ps = PrefixSet(data)
     r_count = len(ps)
     assert e_count == r_count != 0
+
+
+def test_prefixset_iter_prefixes():
+    strings = ['10.0.0.0/8', '2001:db8::/32']
+    for s in strings:
+        ps = PrefixSet(s)
+        assert list(ps.prefixes()) == [ip_network(s)]
+
+
+def test_prefixset_contains_prefix():
+    strings = ['10.0.0.0/8', '2001:db8::/32']
+    for s in strings:
+        ps = PrefixSet(s)
+        assert ip_network(s) in ps
+
+
+def test_prefixset_intersection():
+    tuples = [
+        ('10.0.0.0/8^16-24', '10.0.0.0/20'),
+        ('2001:db8::/32^48-64', '2001:db8::/56')
+    ]
+    for s1, s2 in tuples:
+        ps1 = PrefixSet(s1)
+        ps2 = PrefixSet(s2)
+        assert list((ps1 & ps2).prefixes()) == [ip_network(s2)]
 
 
 # def main():
