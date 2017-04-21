@@ -8,4 +8,3 @@ coverage.xml
 dist/
 site/
 .idea
-tox-local.ini
