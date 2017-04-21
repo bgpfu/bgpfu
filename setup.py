@@ -34,7 +34,7 @@ setup(
     download_url='https://github.com/bgpfu/bgpfu/%s' % version,
     include_package_data=True,
     install_requires=requirements,
-    test_requires=test_requirements,
+    tests_require=test_requirements,
     entry_points={
         'console_scripts': ['bgpfu=bgpfu.cli:cli']
     },
