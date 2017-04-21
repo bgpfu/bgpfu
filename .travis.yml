@@ -8,6 +8,7 @@ branches:
 before_install:
   - sudo apt-get -qq update
 install:
+  - pip install -U pip
   - pip install tox-travis
   - pip install codecov
 script:
