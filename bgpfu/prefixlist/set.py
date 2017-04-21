@@ -12,6 +12,8 @@ class PrefixSet(BaseObject, Set):
         self.log_init()
         # if we weren't given a dict, try and parse it out
         # as prefix/len^min-max into the expected dict structure
+        if data is None:
+            data = {}
         if not isinstance(data, dict):
             try:
                 data = self.parse_prefix_range(expr=data)
@@ -27,9 +29,10 @@ class PrefixSet(BaseObject, Set):
         for af in data:
             # determine the ip address version that we're dealing with
             try:
-                version = int(re.match(r'^ipv(\d)', af).group(1))
-            except ValueError:
+                version = int(re.match(r'^ipv(4|6)', af).group(1))
+            except (ValueError, AttributeError):
                 self.log.warning(msg="invalid address-family %s" % af)
+                continue
             self.log.debug(msg="adding %s prefixes to set" % af)
             # create a temporary list to hold index ranges
             temp = list()
@@ -41,6 +44,7 @@ class PrefixSet(BaseObject, Set):
                     prefix, root = self.index_of(entry["prefix"])
                 except ValueError as e:
                     self.log.warning(msg=e.message)
+                    continue
                 # check that the prefix has the correct address version
                 if prefix.version != version:
                     self.log.warning(msg="prefix %s not of version %d" % (prefix, version))
@@ -51,15 +55,20 @@ class PrefixSet(BaseObject, Set):
                 h = prefix.max_prefixlen
                 self.log.debug(msg="setting base index of prefix: %s = %d" % (prefix, root))
                 # check if we have been given min and max prefix-lengths
+                m_set = False
                 try:
                     m = max(int(entry["greater-equal"]), l)
+                    m_set = True
                 except (KeyError, ValueError):
                     m = l
                 self.log.debug(msg="min-length set to %d" % m)
                 try:
                     n = min(int(entry["less-equal"]), h)
                 except (KeyError, ValueError):
-                    n = m
+                    if m_set:
+                        n = h
+                    else:
+                        n = m
                 self.log.debug(msg="max-length set to %d" % n)
                 self.log.debug(msg="traversing subtree from index %d" % root)
                 # calculate the total depth of the iteration
@@ -182,10 +191,22 @@ class PrefixSet(BaseObject, Set):
                 raise f
 
     def prefixes(self):
-        for af in ("ipv4", "ipv6"):
-            for lower, upper in self.sets(af):
-                for index in range(lower, upper):
-                    yield self.indexed_by(index=index, af=af)
+        for version, index in self:
+            yield self.indexed_by(index=index, af="ipv%d" % version)
+
+    def meta(self, key=None, strict=False):
+        if key:
+            try:
+                return self._meta[key]
+            except KeyError as e:
+                if strict:
+                    self.log.error(msg=e.message)
+                    raise e
+                else:
+                    self.log.debug(msg=e.message)
+                    return None
+        else:
+            return self._meta
 
     @staticmethod
     def index_of(prefix=None):
