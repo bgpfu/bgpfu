@@ -220,6 +220,14 @@ class PrefixSet(BaseObject, Set):
         for version, index in self:
             yield self.indexed_by(index=index, af="ipv%d" % version)
 
+    def data(self, aggregate=True):
+        data = {"ipv4": [], "ipv6": []}
+        for prefix in self.prefixes():
+            af = "ipv%d" % prefix.version
+            prefix = "%s/%d" % (prefix.network_address, prefix.prefixlen)
+            data[af].append({"prefix": prefix})
+        return data
+
     def meta(self, key=None, strict=False):
         if key:
             try:

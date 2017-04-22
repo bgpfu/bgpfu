@@ -186,3 +186,12 @@ def test_prefixset_union():
         ps1 = PrefixSet(s1)
         ps2 = PrefixSet(s2)
         assert list((ps1 | ps2).prefixes()) == [ip_network(s1), ip_network(s2)]
+
+
+def test_prefixset_data():
+    data = {
+        'ipv4': [{'prefix': '10.0.0.0/8'}],
+        'ipv6': [{'prefix': '2001:db8::/32'}]
+    }
+    ps = PrefixSet(data)
+    assert ps.data() == data
