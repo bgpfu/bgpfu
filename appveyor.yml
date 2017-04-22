@@ -1,8 +1,7 @@
 ---
-#version: {branch}.{build}
 environment:
   matrix:
-    - PYTHON: "C:\\Python27"
+    - PYTHON: "C:\\Python27-x64"
 #      PYTHON_VERSION: "2.7.8"
 #      PYTHON_ARCH: "32"
 #
@@ -17,7 +16,7 @@ environment:
 build: false
 
 init:
-  - "ECHO %PYTHON% %PYTHON_VERSION% %PYTHON_ARCH%"
+  - "%PYTHON%/Scripts/python.exe --version"
 
 install:
   - "%PYTHON%/Scripts/pip.exe install -r facsimile/requirements-test.txt"
