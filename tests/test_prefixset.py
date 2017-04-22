@@ -175,3 +175,14 @@ def test_prefixset_intersection():
         ps1 = PrefixSet(s1)
         ps2 = PrefixSet(s2)
         assert list((ps1 & ps2).prefixes()) == [ip_network(s2)]
+
+
+def test_prefixset_union():
+    tuples = [
+        ('10.0.0.0/16', '10.1.0.0/16'),
+        ('2001:db8::/48', '2001:db8:ffff::/48')
+    ]
+    for s1, s2 in tuples:
+        ps1 = PrefixSet(s1)
+        ps2 = PrefixSet(s2)
+        assert list((ps1 | ps2).prefixes()) == [ip_network(s1), ip_network(s2)]
