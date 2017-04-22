@@ -1,3 +1,4 @@
+---
 codecov:
   notify:
     require_ci_to_pass: yes
@@ -24,3 +25,4 @@ comment:
   layout: "header, diff"
   behavior: default
   require_changes: no
+...
