@@ -15,8 +15,8 @@ environment:
 
 build: false
 
-init:
-  - "%PYTHON%/Scripts/python.exe --version"
+#init:
+#  - "%PYTHON%/Scripts/python.exe --version"
 
 install:
   - "%PYTHON%/Scripts/pip.exe install -r facsimile/requirements-test.txt"
