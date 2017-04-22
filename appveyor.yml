@@ -2,21 +2,8 @@
 environment:
   matrix:
     - PYTHON: "C:\\Python27-x64"
-#      PYTHON_VERSION: "2.7.8"
-#      PYTHON_ARCH: "32"
-#
-#    - PYTHON: "C:\\Python33"
-#      PYTHON_VERSION: "3.3.5"
-#      PYTHON_ARCH: "32"
-#
-#    - PYTHON: "C:\\Python34"
-#      PYTHON_VERSION: "3.4.1"
-#      PYTHON_ARCH: "32"
 
 build: false
-
-#init:
-#  - "%PYTHON%/Scripts/python.exe --version"
 
 install:
   - "%PYTHON%/Scripts/pip.exe install -r facsimile/requirements-test.txt"
