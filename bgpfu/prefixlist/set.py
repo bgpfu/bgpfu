@@ -87,7 +87,7 @@ class PrefixSet(BaseObject, Set):
                     right = 2*right + 1
                 self.log.debug(msg="indexing %s^%d-%d complete" % (prefix, m, n))
             # sort temp list by lower bound values
-            temp.sort(key=itemgetter(1))
+            temp.sort(key=itemgetter(0))
             # get reference to the correct set
             s = self.sets(af)
             # loop through the resulting range entries and
@@ -143,6 +143,48 @@ class PrefixSet(BaseObject, Set):
             for lower, upper in self.sets(version):
                 yield (version, lower, upper)
 
+    @classmethod
+    def _from_iterable(cls, it):
+        self = cls({})
+        for item in it:
+            af = "ipv%d" % item[0]
+            lower = item[1]
+            try:
+                upper = item[2]
+            except IndexError:
+                upper = lower + 1
+            try:
+                self.sets(af).add((lower, upper))
+            except KeyError as e:
+                self.log.error(msg=e.message)
+                raise e
+        self._merge()
+        return self
+
+    def _merge(self):
+        for version in (4, 6):
+            s = self.sets(version)
+            merged = set()
+            try:
+                temp = sorted(list(s), key=itemgetter(0))
+            except IndexError:
+                continue
+            lower, upper = None, None
+            for next_lower, next_upper in temp:
+                if lower is None:
+                    lower = next_lower
+                    upper = next_upper
+                    continue
+                if upper < next_lower:
+                    merged.add((lower, upper))
+                    lower = next_lower
+                upper = next_upper
+            else:
+                if upper is not None:
+                    merged.add((lower, upper))
+            s = merged
+        return
+
     def __and__(self, other):
         if not isinstance(other, self.__class__):
             return NotImplemented
@@ -160,24 +202,8 @@ class PrefixSet(BaseObject, Set):
     def __or__(self, other):
         if not isinstance(other, self.__class__):
             return NotImplemented
-        return super(PrefixSet, self).__or__(other)
-
-    @classmethod
-    def _from_iterable(cls, it):
-        self = cls({})
-        for item in it:
-            af = "ipv%d" % item[0]
-            lower = item[1]
-            try:
-                upper = item[2]
-            except IndexError:
-                upper = lower + 1
-            try:
-                self.sets(af).add((lower, upper))
-            except KeyError as e:
-                self.log.error(msg=e.message)
-                raise e
-        return self
+        it = list(self._iter_ranges()) + list(other._iter_ranges())
+        return self._from_iterable(it)
 
     def sets(self, af=None):
         try:
