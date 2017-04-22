@@ -24,6 +24,6 @@ install:
   - "%PYTHON%/Scripts/pip.exe install codecov"
 
 test_script:
-  - "%PYTHON%/Scripts/tox.exe"
+  - "%PYTHON%/Scripts/tox.exe -e py"
 
 ...
