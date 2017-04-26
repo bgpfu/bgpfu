@@ -115,7 +115,7 @@ def prefixlist(ctx, as_set, output, output_format, proto, **kwargs):
         for chunk in c.iter_prefixes(as_set, proto):
             prefixes.iter_add(chunk)
 
-        if kwargs.get('aggregate', True):
+        if not kwargs['fancy'] and kwargs['aggregate']:
             prefixes = prefixes.aggregate()
 
         with click.open_file(output, 'w') as fobj:

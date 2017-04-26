@@ -26,4 +26,9 @@ class PrefixListBase(BaseObject):
     def iter_add(self, prefix, meta={}):
         raise NotImplementedError("{} does not implement {}".format(
             self.__class__.__name__, inspect.currentframe().f_code.co_name))
+
+    def str_list(self):
+        raise NotImplementedError("{} does not implement {}".format(
+            self.__class__.__name__, inspect.currentframe().f_code.co_name))
+
 # TODO add get functions
