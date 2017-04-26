@@ -21,6 +21,7 @@ import click
 import bgpfu.client
 from bgpfu.output import Output
 from bgpfu.prefixlist import SimplePrefixList as PrefixList
+from bgpfu.prefixlist.set import PrefixSet
 import logging
 
 
@@ -93,6 +94,7 @@ def as_set(ctx, as_set, **kwargs):
 @click.option('--sources', help='use only specified sources (default is all)')
 @click.option('--4', '-4', 'proto', help="use IPv4", flag_value='4', default=True)
 @click.option('--6', '-6', 'proto', help='use IPv6', flag_value='6')
+@click.option('--fancy', help='use fancy set', flag_value=True)
 @click.argument('as-set', nargs=-1)
 @click.pass_context
 def prefixlist(ctx, as_set, output, output_format, proto, **kwargs):
@@ -100,7 +102,10 @@ def prefixlist(ctx, as_set, output, output_format, proto, **kwargs):
     if kwargs.get('debug', False):
         logging.basicConfig(level=logging.DEBUG)
 
-    prefixes = PrefixList()
+    if kwargs.get('fancy', 0):
+        prefixes = PrefixSet(aggregate=kwargs['aggregate'])
+    else:
+        prefixes = PrefixList()
     bgpfuc = bgpfu.client.IRRClient()
     with bgpfuc as c:
         if kwargs.get('sources', False):
@@ -108,7 +113,7 @@ def prefixlist(ctx, as_set, output, output_format, proto, **kwargs):
 #        prefixes = c.get_prefixes(as_set, proto)
 
         for chunk in c.iter_prefixes(as_set, proto):
-            prefixes.add_iter(chunk)
+            prefixes.iter_add(chunk)
 
         if kwargs.get('aggregate', True):
             prefixes = prefixes.aggregate()

@@ -4,9 +4,10 @@ import ipaddress
 from collections import Set
 from operator import itemgetter
 from bgpfu.base import BaseObject
+from bgpfu.prefixlist import PrefixListBase
 
 
-class PrefixSet(BaseObject, Set):
+class PrefixSet(PrefixListBase, Set):
     def __init__(self, data=None, **kwargs):
         super(PrefixSet, self).__init__()
         self.log_init()
@@ -167,6 +168,22 @@ class PrefixSet(BaseObject, Set):
         self = cls({})
         for item in it:
             af = "ipv%d" % item[0]
+            lower = item[1]
+            try:
+                upper = item[2]
+            except IndexError:
+                upper = lower + 1
+            try:
+                self.sets(af).add((lower, upper))
+            except KeyError as e:
+                self.log.error(msg=e.message)
+                raise e
+        return self
+
+    def iter_add(self, it):
+        for item in it:
+            prefix = self.check_val(item)
+            af = "ipv%d" % prefix.version
             lower = item[1]
             try:
                 upper = item[2]

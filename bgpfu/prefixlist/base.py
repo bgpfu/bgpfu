@@ -1,12 +1,20 @@
 
 import inspect
 import ipaddress
+from bgpfu.base import BaseObject
 
 
-
-class PrefixListBase(object):
-    def __init__(self, prefix_ctor=ipaddress.ip_network, prefixes=None):
+class PrefixListBase(BaseObject):
+    def __init__(self, prefix_ctor=ipaddress.ip_network, prefixes=None, aggregate=True):
+        super(PrefixListBase, self).__init__()
         self.prefix_ctor = prefix_ctor
+        self.aggregate = aggregate
+
+    def check_val(self, v):
+        """ check value, call ctor if needed """
+        if not isinstance(v, (ipaddress.IPv4Network, ipaddress.IPv6Network)):
+            return ipaddress.ip_network(unicode(v))
+        return v
 
     def make_prefix(self, prefix):
         return self.prefix_ctor(prefix)
