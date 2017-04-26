@@ -188,10 +188,35 @@ def test_prefixset_union():
         assert list((ps1 | ps2).prefixes()) == [ip_network(s1), ip_network(s2)]
 
 
-def test_prefixset_data():
+def test_prefixset_data_no_aggr():
     data = {
         'ipv4': [{'prefix': '10.0.0.0/8'}],
         'ipv6': [{'prefix': '2001:db8::/32'}]
     }
     ps = PrefixSet(data)
-    assert ps.data() == data
+    assert ps.data(aggregate=False) == data
+
+
+def test_prefixset_data_aggr():
+    pre_data = {
+        "ipv4": [
+            {'prefix': '10.0.0.0/9'},
+            {'prefix': '10.128.0.0/9'},
+            {'prefix': '10.0.0.0/10'},
+            {'prefix': '10.64.0.0/10'},
+            {'prefix': '10.128.0.0/10'},
+            {'prefix': '10.192.0.0/10'}
+        ],
+        "ipv6": []
+    }
+    post_data = {
+        "ipv4": [
+            {'prefix': '10.0.0.0/8', "greater-equal": 9, "less-equal": 10}
+        ],
+        "ipv6": []
+    }
+    ps = PrefixSet(pre_data)
+    assert ps.data(aggregate=True) == post_data
+
+if __name__ == '__main__':
+    test_prefixset_data_aggr()
