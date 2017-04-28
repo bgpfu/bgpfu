@@ -80,23 +80,18 @@ class SimplePrefixList(PrefixListBase, collections.MutableSequence):
         else:
             self._prefixes = []
 
-    def _check_val(self, v):
-        if not isinstance(v, (ipaddress.IPv4Network, ipaddress.IPv6Network)):
-            return ipaddress.ip_network(unicode(v))
-        return v
-
     def __getitem__(self, i):
         return self._prefixes[i]
 
     def __setitem__(self, i, v):
-        self._prefixes[i] = self._check_val(v)
+        self._prefixes[i] = self.check_val(v)
 
     def insert(self, i, v):
-        self._prefixes.insert(i, self._check_val(v))
+        self._prefixes.insert(i, self.check_val(v))
 
-    def add_iter(self, it):
+    def iter_add(self, it):
         for v in it:
-            self._prefixes.append(self._check_val(v))
+            self._prefixes.append(self.check_val(v))
 
     def __delitem__(self, i):
         del self._prefixes[i]

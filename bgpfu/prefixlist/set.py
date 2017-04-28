@@ -4,9 +4,10 @@ import ipaddress
 from collections import Set
 from operator import itemgetter
 from bgpfu.base import BaseObject
+from bgpfu.prefixlist import PrefixListBase
 
 
-class PrefixSet(BaseObject, Set):
+class PrefixSet(PrefixListBase, Set):
     def __init__(self, data=None, **kwargs):
         super(PrefixSet, self).__init__()
         self.log_init()
@@ -87,7 +88,7 @@ class PrefixSet(BaseObject, Set):
                     right = 2*right + 1
                 self.log.debug(msg="indexing %s^%d-%d complete" % (prefix, m, n))
             # sort temp list by lower bound values
-            temp.sort(key=itemgetter(1))
+            temp.sort(key=itemgetter(0))
             # get reference to the correct set
             s = self.sets(af)
             # loop through the resulting range entries and
@@ -138,10 +139,58 @@ class PrefixSet(BaseObject, Set):
                 count += upper - lower
         return count
 
-    def _iter_ranges(self):
-        for version in (4, 6):
+    def _iter_ranges(self, versions=(4, 6), length=None):
+        if isinstance(versions, int):
+            versions = (versions,)
+        for version in versions:
             for lower, upper in self.sets(version):
-                yield (version, lower, upper)
+                if length is None:
+                    yield (version, lower, upper)
+                else:
+                    if self.length_from_index(lower) == length:
+                        yield (version, lower, upper)
+
+    @classmethod
+    def _from_iterable(cls, it):
+        self = cls({})
+        for item in it:
+            af = "ipv%d" % item[0]
+            lower = item[1]
+            try:
+                upper = item[2]
+            except IndexError:
+                upper = lower + 1
+            try:
+                self.sets(af).add((lower, upper))
+            except KeyError as e:
+                self.log.error(msg=e.message)
+                raise e
+        self._merge()
+        return self
+
+    def _merge(self):
+        for version in (4, 6):
+            s = self.sets(version)
+            merged = set()
+            try:
+                temp = sorted(list(s), key=itemgetter(0))
+            except IndexError:
+                continue
+            lower, upper = None, None
+            for next_lower, next_upper in temp:
+                if lower is None:
+                    lower = next_lower
+                    upper = next_upper
+                    continue
+                if upper < next_lower:
+                    merged.add((lower, upper))
+                    lower = next_lower
+                upper = next_upper
+            else:
+                if upper is not None:
+                    merged.add((lower, upper))
+            s = merged
+        return
 
     def __and__(self, other):
         if not isinstance(other, self.__class__):
@@ -160,13 +209,13 @@ class PrefixSet(BaseObject, Set):
     def __or__(self, other):
         if not isinstance(other, self.__class__):
             return NotImplemented
-        return super(PrefixSet, self).__or__(other)
+        it = list(self._iter_ranges()) + list(other._iter_ranges())
+        return self._from_iterable(it)
 
-    @classmethod
-    def _from_iterable(cls, it):
-        self = cls({})
+    def iter_add(self, it):
         for item in it:
-            af = "ipv%d" % item[0]
+            prefix = self.check_val(item)
+            af = "ipv%d" % prefix.version
             lower = item[1]
             try:
                 upper = item[2]
@@ -193,6 +242,84 @@ class PrefixSet(BaseObject, Set):
     def prefixes(self):
         for version, index in self:
             yield self.indexed_by(index=index, af="ipv%d" % version)
+
+    def data(self, aggregate=True):
+        data = {"ipv4": [], "ipv6": []}
+        if aggregate:
+            # build a list of subtrees
+            subtrees = list()
+            # iterate through the ranges in the set
+            for version, lower, upper in self._iter_ranges():
+                root = lower
+                # iterate through the root nodes in each range
+                while root < upper:
+                    # get the length of the root node
+                    length = self.length_from_index(root)
+                    left = right = root
+                    depth = 0
+                    while True:
+                        found = False
+                        # get the subtree min and max at the next depth
+                        left *= 2
+                        right = 2*right + 1
+                        # get the ranges at the current depth
+                        for v, next_lower, next_upper in self._iter_ranges(
+                                versions=version, length=length + depth + 1):
+                            if next_lower <= left and next_upper >= right:
+                                    found = True
+                                    break
+                        if found:
+                            depth += 1
+                        else:
+                            break
+                    # check whether the subtree is already covered
+                    covered = False
+                    for st in subtrees:
+                        # check vertically
+                        if (st["min"] <= length) and (length + depth <= st["max"]):
+                            # check horizontally
+                            left = st["root"] * 2**(length - st["min"])
+                            right = (st["root"] + 1) * 2**(length - st["min"]) - 1
+                            if left <= root <= right:
+                                covered = True
+                    if not covered:
+                        subtrees.append({
+                            "version": version, "root": root, "min": length, "max": length + depth
+                        })
+                    root += 1
+            # loop through the list of subtrees, and aggregate
+            while subtrees:
+                st = subtrees.pop()
+                branch = st["root"] % 2
+                for st_other in subtrees:
+                    if not st["version"] == st_other["version"]:
+                        continue
+                    if not st["min"] == st_other["min"]:
+                        continue
+                    if not st["max"] == st_other["max"]:
+                        continue
+                    diff = st["root"] - st_other["root"]
+                    if (branch == 0 and diff == -1) or (branch == 1 and diff == 1):
+                        subtrees.remove(st_other)
+                        st["root"] = (st["root"] - branch) / 2
+                        subtrees.append(st)
+                        break
+                else:
+                    af = "ipv%d" % st["version"]
+                    prefix = self.indexed_by(st["root"], af=af)
+                    length = prefix.prefixlen
+                    entry = {"prefix": str(prefix)}
+                    if st["min"] != length:
+                        entry["greater-equal"] = st["min"]
+                    if st["max"] != length:
+                        entry["less-equal"] = st["max"]
+                    data[af].append(entry)
+        else:
+            for prefix in self.prefixes():
+                af = "ipv%d" % prefix.version
+                prefix = "%s/%d" % (prefix.network_address, prefix.prefixlen)
+                data[af].append({"prefix": prefix})
+        return data
 
     def meta(self, key=None, strict=False):
         if key:
@@ -230,6 +357,10 @@ class PrefixSet(BaseObject, Set):
         l = index.bit_length() - 1
         p = index * 2**(h - l) - 2**h
         return cls((p, l))
+
+    @staticmethod
+    def length_from_index(index):
+        return index.bit_length() - 1
 
     @staticmethod
     def parse_prefix_range(expr=None):
