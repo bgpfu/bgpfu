@@ -1,4 +1,4 @@
-PyYAML>=5.1,<5.2
+PyYAML>=5.2,<5.3
 Jinja2 >= 2.8, < 3
 click >= 5.1
 gevent==1.4.0
