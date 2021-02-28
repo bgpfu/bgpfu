@@ -313,7 +313,7 @@ class PrefixSet(PrefixListBase, Set):
                     diff = st["root"] - st_other["root"]
                     if (branch == 0 and diff == -1) or (branch == 1 and diff == 1):
                         subtrees.remove(st_other)
-                        st["root"] = (st["root"] - branch) / 2
+                        st["root"] = (st["root"] - branch) // 2
                         subtrees.append(st)
                         break
                 else:
@@ -353,7 +353,7 @@ class PrefixSet(PrefixListBase, Set):
         p = int(prefix.network_address)
         l = prefix.prefixlen
         h = prefix.max_prefixlen
-        index = 2 ** l + p / 2 ** (h - l)
+        index = 2 ** l + p // 2 ** (h - l)
         return prefix, index
 
     @staticmethod
