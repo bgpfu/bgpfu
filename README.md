@@ -1,8 +1,8 @@
 
 [![PyPI](https://img.shields.io/pypi/v/bgpfu.svg?maxAge=60)](https://pypi.python.org/pypi/bgpfu)
 [![PyPI](https://img.shields.io/pypi/pyversions/bgpfu.svg?maxAge=600)](https://pypi.python.org/pypi/bgpfu)
-[![Tests](https://github.com/20c/bgpfu/workflows/tests/badge.svg)](https://github.com/20c/bgpfu)
-[![Codecov](https://img.shields.io/codecov/c/github/20c/bgpfu/master.svg?maxAge=60)](https://codecov.io/github/20c/bgpfu)
+[![Tests](https://github.com/bgpfu/bgpfu/workflows/tests/badge.svg)](https://github.com/bgpfu/bgpfu)
+[![Codecov](https://img.shields.io/codecov/c/github/bgpfu/bgpfu/master.svg?maxAge=60)](https://codecov.io/github/bgpfu/bgpfu)
 
 
 # BGP FU
