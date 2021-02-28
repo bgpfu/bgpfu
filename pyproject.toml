@@ -3,9 +3,22 @@ name = "bgpfu"
 version = "0.0.0.1"
 description = "BGP toolkit"
 authors = [
-    "Matt Griswold <grizz@20c.com>"
+    "Matt Griswold <grizz@20c.com>",
+    "Ben Maddison <benm@workonline.africa>",
+    "Job Snijders <job@instituut.net>",
 ]
 license = "Apache-2.0"
+
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: System Administrators",
+    "Intended Audience :: Telecommunications Industry",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 2.7",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Internet",
+]
 
 #include = [
 #    "src/bgpfu/templates/*.j2"
