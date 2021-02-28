@@ -1,6 +1,6 @@
 import ipaddress
 import re
-from collections import Set
+from collections.abc import Set
 from operator import itemgetter
 
 from bgpfu.base import BaseObject

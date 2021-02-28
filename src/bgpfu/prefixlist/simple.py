@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import collections
+import collections.abc
 import ipaddress
 
 from bgpfu.prefixlist import PrefixListBase
@@ -69,7 +69,7 @@ def _do_aggregate(prefixlist):
         aggregate = []
 
 
-class SimplePrefixList(PrefixListBase, collections.MutableSequence):
+class SimplePrefixList(PrefixListBase, collections.abc.MutableSequence):
     """
     Simple PrefixList implemenatation using collections
     *NOTE* loses prefix length info on aggregate
