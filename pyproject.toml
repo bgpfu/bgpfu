@@ -11,6 +11,10 @@ license = "Apache-2.0"
 #    "src/bgpfu/templates/*.j2"
 #]
 
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+
 [tool.poetry.scripts]
 bgpfu = "bgpfu.cli:cli"
 
