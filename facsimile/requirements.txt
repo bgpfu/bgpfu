@@ -1,5 +1,0 @@
-PyYAML >= 3.11, < 4
-Jinja2 >= 2.8, < 3
-click >= 5.1
-gevent==1.2.1
-munge > 1, <2
