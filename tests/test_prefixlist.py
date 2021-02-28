@@ -65,8 +65,8 @@ def test_prefixlist_append():
     for each in prefixes0:
         pfx1.append(each)
 
-    print pfx0
-    print pfx1
+    print(pfx0)
+    print(pfx1)
     assert pfx0 == pfx1
 
 
@@ -77,8 +77,8 @@ def test_prefixlist_append():
     for each in prefixes0:
         pfx1.append(each)
 
-    print pfx0
-    print pfx1
+    print(pfx0)
+    print(pfx1)
     assert pfx0 == pfx1
 
 

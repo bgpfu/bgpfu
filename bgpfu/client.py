@@ -1,1 +1,1 @@
-from irr import IRRClient
+from .irr import IRRClient

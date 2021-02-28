@@ -76,7 +76,7 @@ class SimplePrefixList(PrefixListBase, collections.MutableSequence):
     """
     def __init__(self, prefixes=None):
         if prefixes:
-            self._prefixes = map(ipaddress.ip_network, map(unicode, prefixes))
+            self._prefixes = list(map(ipaddress.ip_network, list(map(str, prefixes))))
         else:
             self._prefixes = []
 
@@ -119,7 +119,7 @@ class SimplePrefixList(PrefixListBase, collections.MutableSequence):
         return [p for p in self._prefixes if p.version == 6]
 
     def str_list(self):
-        return map(str, self._prefixes)
+        return list(map(str, self._prefixes))
 
     def aggregate(self):
         'returns a PrefixList containing the result of aggregating the list'

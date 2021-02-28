@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import absolute_import
+
 
 from bgpfu.irr import IRRBase
 from bgpfu.prefixlist import SimplePrefixList as PrefixList
@@ -141,13 +141,13 @@ class IRRClient(IRRBase):
         """
         performs a query, returns a list
         """
-        if isinstance(querylist, basestring):
+        if isinstance(querylist, str):
             querylist = (querylist,)
 
         return list(self.iter_query(querylist))
 
     def _queue_query(self, querylist):
-        if isinstance(querylist, basestring):
+        if isinstance(querylist, str):
             querylist = (querylist,)
         # throw if queue is full
         self._send_queue.put_nowait(querylist)
@@ -293,7 +293,7 @@ class IRRClient(IRRBase):
         Return members of an as-set or route-set.
         if expand is true, also recursively expand members of all sets within the named set.
         """
-        if isinstance(objs, basestring):
+        if isinstance(objs, str):
             objs = (objs,)
 
         sets = []
@@ -330,13 +330,13 @@ class IRRClient(IRRBase):
 
     def iter_prefixes(self, as_sets, proto=4):
         """ get prefix list for specified as-set(s) """
-        if isinstance(as_sets, basestring):
+        if isinstance(as_sets, str):
             as_sets = (as_sets,)
-        querylist = map(self.make_set_query, as_sets)
+        querylist = list(map(self.make_set_query, as_sets))
 
         # get routes for each AS SET, put directly onto send queue
         for res in self.iter_query(querylist):
-            self._queue_query(map(self.make_route_query, res.split()))
+            self._queue_query(list(map(self.make_route_query, res.split())))
 
         # FIXME - need better handoff to io thread
         gevent.sleep(.0001)

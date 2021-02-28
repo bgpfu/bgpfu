@@ -1,4 +1,4 @@
-from __future__ import unicode_literals
+
 import re
 import ipaddress
 from collections import Set
@@ -350,7 +350,7 @@ class PrefixSet(PrefixListBase, Set):
             'ipv4': {'size': 32, 'cls': ipaddress.IPv4Network},
             'ipv6': {'size': 128, 'cls': ipaddress.IPv6Network}
         }
-        assert isinstance(index, (int, long))
+        assert isinstance(index, int)
         assert af in address_families
         h = int(address_families[af]['size'])
         cls = address_families[af]['cls']
@@ -368,7 +368,7 @@ class PrefixSet(PrefixListBase, Set):
                   r'(\^(?P<ge>\d+)-(?P<le>\d+))?$'
         match = re.match(pattern, expr)
         if match:
-            prefix = ipaddress.ip_network(unicode(match.group("prefix")))
+            prefix = ipaddress.ip_network(str(match.group("prefix")))
             afi = "ipv%d" % prefix.version
             entry = {"prefix": prefix}
             try:

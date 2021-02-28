@@ -13,7 +13,7 @@ class PrefixListBase(BaseObject):
     def check_val(self, v):
         """ check value, call ctor if needed """
         if not isinstance(v, (ipaddress.IPv4Network, ipaddress.IPv6Network)):
-            return ipaddress.ip_network(unicode(v))
+            return ipaddress.ip_network(str(v))
         return v
 
     def make_prefix(self, prefix):
