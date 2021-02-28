@@ -1,4 +1,3 @@
-
 # import to namespace
-from gevent.queue import Queue, Empty, Full # noqa
-from gevent import select, socket # noqa
+from gevent import select, socket  # noqa
+from gevent.queue import Empty, Full, Queue  # noqa

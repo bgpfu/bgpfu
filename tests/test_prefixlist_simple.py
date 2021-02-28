@@ -1,16 +1,16 @@
-
 import ipaddress
+
 import pytest
+
 from bgpfu.prefixlist import SimplePrefixList as PrefixList
 
-
 prefixes0 = [
-    '2620::/64',
-    '10.0.0.0/20',
-    '1.0.1.0/24',
-    '20.0.1.0/24',
-    '192.1.0.0/24',
-    '::/0',
+    "2620::/64",
+    "10.0.0.0/20",
+    "1.0.1.0/24",
+    "20.0.1.0/24",
+    "192.1.0.0/24",
+    "::/0",
 ]
 
 
@@ -77,6 +77,7 @@ def test_prefixlist_set():
     pfx1[idx] = pfx0[idx]
     assert pfx0 == pfx1
 
+
 # FIXME - should check values and not object refs
 #    pfx1[idx] = ipaddress.ip_network(prefixes0[idx])
 #    assert pfx0 == pfx1
@@ -89,10 +90,10 @@ def test_prefixlist_str_list():
 
 def test_aggregate_single():
     prefixlist = [
-        '10.0.1.0/24',
+        "10.0.1.0/24",
     ]
     expected = [
-        '10.0.1.0/24',
+        "10.0.1.0/24",
     ]
     pfx = PrefixList(prefixlist)
 
@@ -102,14 +103,14 @@ def test_aggregate_single():
 
 def test_aggregate_super():
     prefixlist = [
-        '10.0.1.0/24',
-        '10.0.0.0/20',
-        '2001:db8::/32',
-        '2001:db8:1::/64',
+        "10.0.1.0/24",
+        "10.0.0.0/20",
+        "2001:db8::/32",
+        "2001:db8:1::/64",
     ]
     expected = [
-        '10.0.0.0/20',
-        '2001:db8::/32',
+        "10.0.0.0/20",
+        "2001:db8::/32",
     ]
     pfx = PrefixList(prefixlist)
 
@@ -119,11 +120,11 @@ def test_aggregate_super():
 
 def test_aggregate_combine():
     prefixlist = [
-        '10.0.0.0/24',
-        '10.0.1.0/24',
+        "10.0.0.0/24",
+        "10.0.1.0/24",
     ]
     expected = [
-        '10.0.0.0/23',
+        "10.0.0.0/23",
     ]
     pfx = PrefixList(prefixlist)
 
@@ -133,12 +134,12 @@ def test_aggregate_combine():
 
 def test_aggregate_combine_multi():
     prefixlist = [
-        '10.0.0.0/24',
-        '10.0.1.0/24',
-        '10.0.2.0/23',
+        "10.0.0.0/24",
+        "10.0.1.0/24",
+        "10.0.2.0/23",
     ]
     expected = [
-        '10.0.0.0/22',
+        "10.0.0.0/22",
     ]
 
     pfx = PrefixList(prefixlist)
@@ -149,16 +150,16 @@ def test_aggregate_combine_multi():
 
 def test_aggregate_combine_multimore():
     prefixlist = [
-        '10.0.0.0/24',
-        '10.0.1.0/24',
-        '10.0.2.0/23',
-        '10.0.4.0/24',
-        '10.0.5.0/24',
-        '10.0.6.0/24',
-        '10.0.7.0/24',
+        "10.0.0.0/24",
+        "10.0.1.0/24",
+        "10.0.2.0/23",
+        "10.0.4.0/24",
+        "10.0.5.0/24",
+        "10.0.6.0/24",
+        "10.0.7.0/24",
     ]
     expected = [
-        '10.0.0.0/21',
+        "10.0.0.0/21",
     ]
 
     pfx = PrefixList(prefixlist)
@@ -169,17 +170,16 @@ def test_aggregate_combine_multimore():
 
 def test_aggregate_combine_default():
     prefixlist = [
-        '10.0.0.0/24',
-        '10.0.1.0/24',
-        '10.0.2.0/23',
-        '0.0.0.0/0',
+        "10.0.0.0/24",
+        "10.0.1.0/24",
+        "10.0.2.0/23",
+        "0.0.0.0/0",
     ]
     expected = [
-        '0.0.0.0/0',
+        "0.0.0.0/0",
     ]
 
     pfx = PrefixList(prefixlist)
 
     assert expected == pfx.aggregate().str_list()
     assert PrefixList(prefixlist) == pfx
-

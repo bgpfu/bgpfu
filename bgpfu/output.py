@@ -15,24 +15,25 @@
 # limitations under the License.
 
 import inspect
-import pkg_resources
 import re
 
+import pkg_resources
 
-class Output(object):
+
+class Output:
     """
     abstract writing to different output formats
     """
 
     @property
     def available_formats(self):
-        re_out = re.compile('^output_(?P<type>\w+)$')
+        re_out = re.compile(r"^output_(?P<type>\w+)$")
         fmts = []
 
         for name, obj in inspect.getmembers(type(self), inspect.ismethod):
             match = re_out.match(name)
             if match:
-                fmts.append(match.group('type'))
+                fmts.append(match.group("type"))
 
         return fmts
 
@@ -40,7 +41,7 @@ class Output(object):
         """
         write data in specified format to fobj
         """
-        func = 'output_' + fmt
+        func = "output_" + fmt
         if not hasattr(self, func):
             raise ValueError("unknown output format '%s'" % fmt)
         return getattr(self, func)(fobj, data)
@@ -49,17 +50,16 @@ class Output(object):
         """
         load file from package
         """
-        return pkg_resources.resource_string('bgpfu', filename)
+        return pkg_resources.resource_string("bgpfu", filename)
 
     def _init_jinja(self, tmpl_name):
-        tmpl = self.load_file(tmpl_name + '.j2')
+        tmpl = self.load_file(tmpl_name + ".j2")
 
     def output_juniper(self, jobj, data):
-        eng = self._init_jinja('juniper')
+        eng = self._init_jinja("juniper")
 
     def output_txt(self, fobj, data):
         if isinstance(data, list):
-            fobj.write('\n'.join(data))
-            fobj.write('\n')
+            fobj.write("\n".join(data))
+            fobj.write("\n")
             return
-

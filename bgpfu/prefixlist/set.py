@@ -1,15 +1,15 @@
-
-import re
 import ipaddress
+import re
 from collections import Set
 from operator import itemgetter
+
 from bgpfu.base import BaseObject
 from bgpfu.prefixlist import PrefixListBase
 
 
 class PrefixSet(PrefixListBase, Set):
     def __init__(self, data=None, **kwargs):
-        super(PrefixSet, self).__init__()
+        super().__init__()
         self.log_init()
         # if we weren't given a dict, try and parse it out
         # as prefix/len^min-max into the expected dict structure
@@ -26,11 +26,11 @@ class PrefixSet(PrefixListBase, Set):
         self.log.debug(msg="creating prefix sets")
         # create sets per address family to hold prefix range tuples as
         # lower and upper bounds for prefix indices
-        self._sets = {'ipv4': set(), 'ipv6': set()}
+        self._sets = {"ipv4": set(), "ipv6": set()}
         for af in data:
             # determine the ip address version that we're dealing with
             try:
-                version = int(re.match(r'^ipv(4|6)', af).group(1))
+                version = int(re.match(r"^ipv(4|6)", af).group(1))
             except (ValueError, AttributeError):
                 self.log.warning(msg="invalid address-family %s" % af)
                 continue
@@ -48,13 +48,17 @@ class PrefixSet(PrefixListBase, Set):
                     continue
                 # check that the prefix has the correct address version
                 if prefix.version != version:
-                    self.log.warning(msg="prefix %s not of version %d" % (prefix, version))
+                    self.log.warning(
+                        msg="prefix %s not of version %d" % (prefix, version)
+                    )
                     continue
                 # get the length of the base prefix and the maximum prefix length
                 # for the given address family
                 l = prefix.prefixlen
                 h = prefix.max_prefixlen
-                self.log.debug(msg="setting base index of prefix: %s = %d" % (prefix, root))
+                self.log.debug(
+                    msg="setting base index of prefix: %s = %d" % (prefix, root)
+                )
                 # check if we have been given min and max prefix-lengths
                 m_set = False
                 try:
@@ -82,10 +86,12 @@ class PrefixSet(PrefixListBase, Set):
                         # add a tuple giving the lower and upper bounds of the
                         # indices of the subtree's nodes at this level
                         temp.append((left, right + 1))
-                        self.log.debug(msg="added %d indices at depth %d" % (left - right + 1, d))
+                        self.log.debug(
+                            msg="added %d indices at depth %d" % (left - right + 1, d)
+                        )
                     # get the lower and upper bounds at the next level
                     left *= 2
-                    right = 2*right + 1
+                    right = 2 * right + 1
                 self.log.debug(msg="indexing %s^%d-%d complete" % (prefix, m, n))
             # sort temp list by lower bound values
             temp.sort(key=itemgetter(0))
@@ -261,13 +267,14 @@ class PrefixSet(PrefixListBase, Set):
                         found = False
                         # get the subtree min and max at the next depth
                         left *= 2
-                        right = 2*right + 1
+                        right = 2 * right + 1
                         # get the ranges at the current depth
                         for v, next_lower, next_upper in self._iter_ranges(
-                                versions=version, length=length + depth + 1):
+                            versions=version, length=length + depth + 1
+                        ):
                             if next_lower <= left and next_upper >= right:
-                                    found = True
-                                    break
+                                found = True
+                                break
                         if found:
                             depth += 1
                         else:
@@ -278,14 +285,19 @@ class PrefixSet(PrefixListBase, Set):
                         # check vertically
                         if (st["min"] <= length) and (length + depth <= st["max"]):
                             # check horizontally
-                            left = st["root"] * 2**(length - st["min"])
-                            right = (st["root"] + 1) * 2**(length - st["min"]) - 1
+                            left = st["root"] * 2 ** (length - st["min"])
+                            right = (st["root"] + 1) * 2 ** (length - st["min"]) - 1
                             if left <= root <= right:
                                 covered = True
                     if not covered:
-                        subtrees.append({
-                            "version": version, "root": root, "min": length, "max": length + depth
-                        })
+                        subtrees.append(
+                            {
+                                "version": version,
+                                "root": root,
+                                "min": length,
+                                "max": length + depth,
+                            }
+                        )
                     root += 1
             # loop through the list of subtrees, and aggregate
             while subtrees:
@@ -341,21 +353,21 @@ class PrefixSet(PrefixListBase, Set):
         p = int(prefix.network_address)
         l = prefix.prefixlen
         h = prefix.max_prefixlen
-        index = 2**l + p/2**(h - l)
+        index = 2 ** l + p / 2 ** (h - l)
         return prefix, index
 
     @staticmethod
     def indexed_by(index=None, af=None):
         address_families = {
-            'ipv4': {'size': 32, 'cls': ipaddress.IPv4Network},
-            'ipv6': {'size': 128, 'cls': ipaddress.IPv6Network}
+            "ipv4": {"size": 32, "cls": ipaddress.IPv4Network},
+            "ipv6": {"size": 128, "cls": ipaddress.IPv6Network},
         }
         assert isinstance(index, int)
         assert af in address_families
-        h = int(address_families[af]['size'])
-        cls = address_families[af]['cls']
+        h = int(address_families[af]["size"])
+        cls = address_families[af]["cls"]
         l = index.bit_length() - 1
-        p = index * 2**(h - l) - 2**h
+        p = index * 2 ** (h - l) - 2 ** h
         return cls((p, l))
 
     @staticmethod
@@ -364,8 +376,10 @@ class PrefixSet(PrefixListBase, Set):
 
     @staticmethod
     def parse_prefix_range(expr=None):
-        pattern = r'^(?P<prefix>((\d+(\.\d+){3})|([0-9a-fA-F:]{2,40}))/\d+)' \
-                  r'(\^(?P<ge>\d+)-(?P<le>\d+))?$'
+        pattern = (
+            r"^(?P<prefix>((\d+(\.\d+){3})|([0-9a-fA-F:]{2,40}))/\d+)"
+            r"(\^(?P<ge>\d+)-(?P<le>\d+))?$"
+        )
         match = re.match(pattern, expr)
         if match:
             prefix = ipaddress.ip_network(str(match.group("prefix")))
