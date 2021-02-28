@@ -1,8 +1,8 @@
-import logging
 import inspect
+import logging
 
 
-class BaseObject(object):
+class BaseObject:
     def __init__(self):
         self._log = logging.getLogger(self.__module__)
 
@@ -39,16 +39,16 @@ class BaseObject(object):
 
     def log_init_done(self):
         caller = inspect.currentframe().f_back.f_back.f_code.co_name
-        if caller == '__init__':
+        if caller == "__init__":
             self.log.debug(msg="still initialising %s instance" % self.cls_name)
         else:
             self.log.debug(msg="%s instance initialised" % self.cls_name)
 
     def log_method_enter(self, method=None):
-        self.log.debug(msg="entering method %s.%s" % (self.cls_name, method))
+        self.log.debug(msg=f"entering method {self.cls_name}.{method}")
 
     def log_method_exit(self, method=None):
-        self.log.debug(msg="leaving method %s.%s" % (self.cls_name, method))
+        self.log.debug(msg=f"leaving method {self.cls_name}.{method}")
 
     def log_ready_start(self):
         self.log.debug(msg="preparing %s for use" % self)
@@ -63,9 +63,7 @@ class BaseObject(object):
         self.log.debug(msg="finished cleaning up %s" % self)
 
     def raise_type_error(self, arg=None, cls=None):
-        msg = "argument %s (%s) not of type %s" % (
-            arg.__name__, arg, cls
-            )
+        msg = "argument {} ({}) not of type {}".format(arg.__name__, arg, cls)
         self.log.error(msg=msg)
         raise TypeError(msg)
 

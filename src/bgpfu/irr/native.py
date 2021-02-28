@@ -14,15 +14,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import absolute_import
 
+import logging
+import re
+
+import gevent
+from pkg_resources import get_distribution
+
+from bgpfu.io import Empty, Queue, select, socket
 from bgpfu.irr import IRRBase
 from bgpfu.prefixlist import SimplePrefixList as PrefixList
-from bgpfu.io import select, socket, Queue, Empty
-import gevent
-import logging
-from pkg_resources import get_distribution
-import re
 
 
 class IRRClient(IRRBase):
@@ -30,13 +31,14 @@ class IRRClient(IRRBase):
     IRR client, uses pipelining
         supports keepalive
     """
+
     def __init__(self):
         self.keepalive = True
-        self.host = 'whois.radb.net'
-        self.host = 'rr.ntt.net'
+        self.host = "whois.radb.net"
+        self.host = "rr.ntt.net"
         self.port = 43
 
-        self.re_res = re.compile('(?P<state>[ACDEF])(?P<len>\d*)(?P<msg>[\w\s]*)$')
+        self.re_res = re.compile(r"(?P<state>[ACDEF])(?P<len>\d*)(?P<msg>[\w\s]*)$")
 
         self.log = logging.getLogger(__name__)
 
@@ -61,27 +63,27 @@ class IRRClient(IRRBase):
         self.sckt.setblocking(False)
 
         if self.keepalive:
-            self.sckt.send('!!\n')
+            self.sckt.send("!!\n".encode("ascii"))
 
         self._send_thread = gevent.spawn(self._process_send_queue)
 
-        self.query_one('!nBGPFU-{}'.format(get_distribution('bgpfu').version))
+        self.query_one("!nBGPFU-{}".format(get_distribution("bgpfu").version))
 
     def make_set_query(self, obj, expand=True):
         """
         if expand is true, also recursively expand members of all sets within the named set.
         """
-        q = '!i' + obj
+        q = "!i" + obj
         if expand:
-            q = q + ',1'
+            q = q + ",1"
         return q
 
     def make_route_query(self, obj, proto=4):
         proto = int(proto)
         if proto == 4:
-            return '!g' + obj
+            return "!g" + obj
         elif proto == 6:
-            return '!6' + obj
+            return "!6" + obj
 
         raise ValueError("unknown protocol '%s'" % str(proto))
 
@@ -89,39 +91,38 @@ class IRRClient(IRRBase):
         self.log.debug("response %s", response)
         match = self.re_res.match(response)
         if not match:
-            raise RuntimeError("invalid response '%s'" % (response,))
+            raise RuntimeError(f"invalid response '{response}'")
 
-        state = match.group('state')
-        if state == 'A':
-            return int(match.group('len'))
-        elif state == 'C':
+        state = match.group("state")
+        if state == "A":
+            return int(match.group("len"))
+        elif state == "C":
             return False
-        elif state == 'D':
+        elif state == "D":
             self.log.warning("skipping key not found")
             return False
-        elif state == 'E':
+        elif state == "E":
             raise KeyError("multiple copies of key in database")
-        elif state == 'F':
-            if match.group('msg'):
-                msg = match.group('msg').strip()
+        elif state == "F":
+            if match.group("msg"):
+                msg = match.group("msg").strip()
             else:
-                msg = 'unknown error'
+                msg = "unknown error"
             raise RuntimeError(msg)
 
-        raise RuntimeError("invalid response '%s'" % (response,))
+        raise RuntimeError(f"invalid response '{response}'")
 
     def iter_query(self, querylist):
         """
         performs a query, returns a generator
         """
         if not self.sckt:
-            raise IOError("not connected")
+            raise OSError("not connected")
 
-        self.log.debug("QUERY {}".format(querylist))
+        self.log.debug(f"QUERY {querylist}")
         self._queue_query(querylist)
-        gevent.sleep(.0001)
-        for res in self._pipeline_read():
-            yield res
+        gevent.sleep(0.0001)
+        yield from self._pipeline_read()
 
     def query_one(self, query):
         """
@@ -141,13 +142,13 @@ class IRRClient(IRRBase):
         """
         performs a query, returns a list
         """
-        if isinstance(querylist, basestring):
+        if isinstance(querylist, str):
             querylist = (querylist,)
 
         return list(self.iter_query(querylist))
 
     def _queue_query(self, querylist):
-        if isinstance(querylist, basestring):
+        if isinstance(querylist, str):
             querylist = (querylist,)
         # throw if queue is full
         self._send_queue.put_nowait(querylist)
@@ -181,25 +182,25 @@ class IRRClient(IRRBase):
             qlen = len(querylist)
             self._req_sent += qlen
             # self.log.debug("sending {}/{}".format(qlen, self._req_sent))
-            q = '\n'.join(querylist) + '\n'
+            q = "\n".join(querylist) + "\n"
             ttl = 0
             sz = len(q)
             while ttl < sz:
-                sent = self.sckt.send(q[ttl:])
+                sent = self.sckt.send(q[ttl:].encode("ascii"))
                 if not sent:
                     raise RuntimeError("socket connection broken")
                 ttl = ttl + sent
 
-            self.log.debug("sent '{}' ]{}]".format(q.rstrip(), ttl))
+            self.log.debug(f"sent '{q.rstrip()}' ]{ttl}]")
 
     def _pipeline_read(self):
         if not self._req_sent:
             raise RuntimeError("read called without a queued request")
 
         reqno = 0
-        buf = ''
+        buf = ""
         while reqno < self._req_sent:
-            self.log.debug("processing {} of {}".format(reqno, self._req_sent))
+            self.log.debug(f"processing {reqno} of {self._req_sent}")
             res, buf = self._read_res(buf)
             reqno += 1
             if not res:
@@ -210,7 +211,7 @@ class IRRClient(IRRBase):
 
         self._req_sent = 0
 
-    def _read_res(self, buf=''):
+    def _read_res(self, buf=""):
         """
         read next response
         """
@@ -224,23 +225,23 @@ class IRRClient(IRRBase):
         else:
             timeout = 10
 
-        chunk = ''
+        chunk = ""
         readable = select.select([self.sckt], [], [], timeout)[0]
 
         if readable:
-            chunk = self.sckt.recv(chunk_size)
+            chunk = self.sckt.recv(chunk_size).decode("utf-8")
 
-#        self.log.debug("-- BUF -----\n{}------------".format(buf))
-#        self.log.debug("-- CHUNK ---\n{}------------".format(chunk))
+        #        self.log.debug("-- BUF -----\n{}------------".format(buf))
+        #        self.log.debug("-- CHUNK ---\n{}------------".format(chunk))
         if buf:
             chunk = buf + chunk
 
-        idx = chunk.find('\n')
+        idx = chunk.find("\n")
         if idx == -1:
             raise RuntimeError("no data to read, but no response in buffer")
 
         response = chunk[:idx]
-        chunk = chunk[idx + 1:]
+        chunk = chunk[idx + 1 :]
 
         sz = self.parse_response(response)
         if not sz:
@@ -250,14 +251,14 @@ class IRRClient(IRRBase):
         chunks.append(chunk)
 
         while ttl <= sz:
-#            self.log.debug("ttl %d, sz %d", ttl, sz)
+            #            self.log.debug("ttl %d, sz %d", ttl, sz)
             readable = select.select([self.sckt], [], [])[0]
             if not readable:
                 raise RuntimeError("socket connection broken")
 
             chunk = self.sckt.recv(chunk_size)
 
-            if chunk == '':
+            if chunk == "":
                 raise RuntimeError("socket connection broken")
             chunks.append(chunk)
             ttl = ttl + len(chunk)
@@ -269,18 +270,18 @@ class IRRClient(IRRBase):
 
         # try to strip off command complete
         # FIXME - need to stop eating the last C on a result, it screws up the results
-        buf = buf.lstrip('C')
-        buf = buf.lstrip('\n')
+        buf = buf.lstrip("C")
+        buf = buf.lstrip("\n")
 
         # self.log.debug("-- FINRES ---\n{}\n-- /FINRES ----".format(''.join(chunks)))
         # self.log.debug("-- FINBUF -----\n{}-- /FINBUF ----".format(buf))
         # self.log.debug("ttl %d, sz %d", ttl, sz)
         # self.log.debug("remaining %d '%s'", ttl - sz, buf)
-        return ''.join(chunks), buf
+        return "".join(chunks), buf
 
     def set_sources(self, *sources):
         """ set sources to the specified list """
-        res = self.query('!s{}'.format(','.join(sources)))
+        res = self.query("!s{}".format(",".join(sources)))
         # FIXME - stop eating the last C on a command
         # if len(res) != 1:
         #     raise RuntimeError("source query returned multiple results")
@@ -293,20 +294,20 @@ class IRRClient(IRRBase):
         Return members of an as-set or route-set.
         if expand is true, also recursively expand members of all sets within the named set.
         """
-        if isinstance(objs, basestring):
+        if isinstance(objs, str):
             objs = (objs,)
 
         sets = []
         querylist = []
 
         for each in objs:
-            q = '!i' + each
+            q = "!i" + each
             if expand:
-                q = q + ',1'
-            self.log.debug("ADDING {}".format(q))
+                q = q + ",1"
+            self.log.debug(f"ADDING {q}")
             querylist.append(q)
 
-        self.log.debug("QUERLLLLLLL {}".format(querylist))
+        self.log.debug(f"QUERLLLLLLL {querylist}")
         for res in self.iter_query(querylist):
             sets += res.split()
 
@@ -316,9 +317,9 @@ class IRRClient(IRRBase):
         """ get routes for specified object """
         proto = int(proto)
         if proto == 4:
-            q = '!g'
+            q = "!g"
         elif proto == 6:
-            q = '!6'
+            q = "!6"
         else:
             raise ValueError("unknown protocol '%s'" % str(proto))
 
@@ -330,16 +331,16 @@ class IRRClient(IRRBase):
 
     def iter_prefixes(self, as_sets, proto=4):
         """ get prefix list for specified as-set(s) """
-        if isinstance(as_sets, basestring):
+        if isinstance(as_sets, str):
             as_sets = (as_sets,)
-        querylist = map(self.make_set_query, as_sets)
+        querylist = list(map(self.make_set_query, as_sets))
 
         # get routes for each AS SET, put directly onto send queue
         for res in self.iter_query(querylist):
-            self._queue_query(map(self.make_route_query, res.split()))
+            self._queue_query(list(map(self.make_route_query, res.split())))
 
         # FIXME - need better handoff to io thread
-        gevent.sleep(.0001)
+        gevent.sleep(0.0001)
 
         # read results from all requests
         for res in self._pipeline_read():
