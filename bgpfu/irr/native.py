@@ -63,7 +63,7 @@ class IRRClient(IRRBase):
         self.sckt.setblocking(False)
 
         if self.keepalive:
-            self.sckt.send("!!\n")
+            self.sckt.send("!!\n".encode("ascii"))
 
         self._send_thread = gevent.spawn(self._process_send_queue)
 
@@ -186,7 +186,7 @@ class IRRClient(IRRBase):
             ttl = 0
             sz = len(q)
             while ttl < sz:
-                sent = self.sckt.send(q[ttl:])
+                sent = self.sckt.send(q[ttl:].encode("ascii"))
                 if not sent:
                     raise RuntimeError("socket connection broken")
                 ttl = ttl + sent
@@ -229,7 +229,7 @@ class IRRClient(IRRBase):
         readable = select.select([self.sckt], [], [], timeout)[0]
 
         if readable:
-            chunk = self.sckt.recv(chunk_size)
+            chunk = self.sckt.recv(chunk_size).decode("utf-8")
 
         #        self.log.debug("-- BUF -----\n{}------------".format(buf))
         #        self.log.debug("-- CHUNK ---\n{}------------".format(chunk))
