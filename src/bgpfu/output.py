@@ -30,7 +30,7 @@ class Output:
         re_out = re.compile(r"^output_(?P<type>\w+)$")
         fmts = []
 
-        for name, obj in inspect.getmembers(type(self), inspect.ismethod):
+        for name, obj in inspect.getmembers(type(self), inspect.isfunction):
             match = re_out.match(name)
             if match:
                 fmts.append(match.group("type"))

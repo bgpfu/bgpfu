@@ -46,8 +46,8 @@ def test_queries():
         assert iter_res
         assert iter_res == get_res
 
-        iter_res = list(irr.iter_routes("AS-20C"))
-        get_res = irr.get_routes("AS-20C")
+        iter_res = list(irr.iter_routes("AS63311"))
+        get_res = irr.get_routes("AS63311")
         #        assert iter_res
         assert iter_res == get_res
 
