@@ -32,13 +32,13 @@ def test_prefixlist_eq():
     pfx1.pop()
     assert pfx0 != pfx1
 
-    with pytest.raises(TypeError) as e:
+    with pytest.raises(TypeError) as excinfo:
         pfx0 != "string"
-    assert "object not PrefixList type" == e.value.message
+    assert "object not PrefixList type" in str(excinfo.value)
 
-    with pytest.raises(TypeError) as e:
+    with pytest.raises(TypeError) as excinfo:
         pfx0 != "string"
-    assert "object not PrefixList type" == e.value.message
+    assert "object not PrefixList type" in str(excinfo.value)
 
 
 def test_prefixlist_append():

@@ -19,7 +19,7 @@ class PrefixSet(PrefixListBase, Set):
             try:
                 data = self.parse_prefix_range(expr=data)
             except ValueError as e:
-                self.log.error(msg=e.message)
+                self.log.error(msg=str(e))
                 raise e
         # save meta information
         self._meta = kwargs
@@ -44,7 +44,7 @@ class PrefixSet(PrefixListBase, Set):
                 try:
                     prefix, root = self.index_of(entry["prefix"])
                 except ValueError as e:
-                    self.log.warning(msg=e.message)
+                    self.log.warning(msg=str(e))
                     continue
                 # check that the prefix has the correct address version
                 if prefix.version != version:
@@ -122,7 +122,7 @@ class PrefixSet(PrefixListBase, Set):
             try:
                 prefix, index = self.index_of(prefix=item)
             except ValueError as e:
-                self.log.error(msg=e.message)
+                self.log.error(msg=str(e))
                 raise e
             version = prefix.version
         for lower, upper in self.sets(version):
@@ -169,7 +169,7 @@ class PrefixSet(PrefixListBase, Set):
             try:
                 self.sets(af).add((lower, upper))
             except KeyError as e:
-                self.log.error(msg=e.message)
+                self.log.error(msg=str(e))
                 raise e
         self._merge()
         return self
@@ -230,7 +230,7 @@ class PrefixSet(PrefixListBase, Set):
             try:
                 self.sets(af).add((lower, upper))
             except KeyError as e:
-                self.log.error(msg=e.message)
+                self.log.error(msg=str(e))
                 raise e
         return self
 
@@ -241,8 +241,8 @@ class PrefixSet(PrefixListBase, Set):
             try:
                 return self._sets["ipv%d" % af]
             except KeyError as f:
-                self.log.warning(msg=e.message)
-                self.log.error(msg=f.message)
+                self.log.warning(msg=str(e))
+                self.log.error(msg=str(f))
                 raise f
 
     def prefixes(self):
@@ -339,10 +339,10 @@ class PrefixSet(PrefixListBase, Set):
                 return self._meta[key]
             except KeyError as e:
                 if strict:
-                    self.log.error(msg=e.message)
+                    self.log.error(msg=str(e))
                     raise e
                 else:
-                    self.log.debug(msg=e.message)
+                    self.log.debug(msg=str(e))
                     return None
         else:
             return self._meta

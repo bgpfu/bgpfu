@@ -65,6 +65,6 @@ def test_parse_response():
     assert False == irr.parse_response("D")
     with pytest.raises(KeyError):
         irr.parse_response("E")
-    with pytest.raises(RuntimeError) as e:
+    with pytest.raises(RuntimeError) as excinfo:
         irr.parse_response("F unrecognized command")
-    assert "unrecognized command" == e.value.message
+    assert "unrecognized command" in str(excinfo.value)
