@@ -37,6 +37,7 @@ Jinja2 = "^2.11.3"
 click = "^7.1.2"
 gevent = "^21.1.2"
 munge = "^1.1.0"
+py-radix = "^0.10.0"
 
 [tool.poetry.dev-dependencies]
 codecov = "^2.1.10"

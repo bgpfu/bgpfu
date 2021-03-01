@@ -15,6 +15,7 @@
 # limitations under the License.
 
 
+import ipaddress
 import logging
 
 import click
@@ -23,6 +24,7 @@ import bgpfu.client
 from bgpfu.output import Output
 from bgpfu.prefixlist import SimplePrefixList as PrefixList
 from bgpfu.prefixlist.set import PrefixSet
+from .roa import RoaTree
 
 # global output formatter
 outfmt = Output()
@@ -61,6 +63,33 @@ def output_options(f):
 @click.pass_context
 def cli(ctx):
     pass
+
+
+@cli.command()
+@click.pass_context
+# @connect_options
+@common_options
+@click.argument("prefix", nargs=1)
+@click.argument("asn", nargs=1)
+@click.option("--rib-file", help="use bgp rib file")
+@click.option("--rpki-file", help="use rpki json file")
+def check_roa(ctx, prefix, asn, rib_file, rpki_file, **kwargs):
+    """ check roa for prefix """
+    prefix = ipaddress.ip_network(prefix)
+    asn = int(asn)
+
+    if rib_file and rpki_file:
+        raise ValueError("bgp-rib and rpki-json are mutually exclusive")
+
+    if rib_file:
+        db = RoaTree(rib_file=rib_file)
+
+    if rpki_file:
+        db = RoaTree(rpki_file=rpki_file)
+
+    print(f"check_roa {prefix} {asn}")
+    rv = db.validation_state(prefix, asn)
+    print(rv)
 
 
 @cli.command()
