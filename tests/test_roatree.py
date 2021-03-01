@@ -49,6 +49,16 @@ def test_roatree_validation(tree):
     assert state["state"] == "valid"
     assert not tree.check_invalid(*args)
 
+    args = ("10.0.4.0/24", 12345)
+    state = tree.validation_state(*args)
+    assert state["state"] == "invalid"
+    assert tree.check_invalid(*args)
+
+    args = ("10.0.4.0/24", 63311)
+    state = tree.validation_state(*args)
+    assert state["state"] == "valid"
+    assert not tree.check_invalid(*args)
+
     args = ("192.0.2.0/24", 11336)
     state = tree.validation_state(*args)
     assert state["state"] == "invalid"
