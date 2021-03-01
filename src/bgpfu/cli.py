@@ -24,6 +24,7 @@ import bgpfu.client
 from bgpfu.output import Output
 from bgpfu.prefixlist import SimplePrefixList as PrefixList
 from bgpfu.prefixlist.set import PrefixSet
+
 from .roa import RoaTree
 
 # global output formatter

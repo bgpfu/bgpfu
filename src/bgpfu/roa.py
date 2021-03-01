@@ -1,8 +1,8 @@
-import logging
-import json
 import ipaddress
-import radix
+import json
+import logging
 
+import radix
 
 logger = logging.getLogger(__name__)
 

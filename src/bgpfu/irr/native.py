@@ -63,7 +63,7 @@ class IRRClient(IRRBase):
         self.sckt.setblocking(False)
 
         if self.keepalive:
-            self.sckt.send("!!\n".encode("ascii"))
+            self.sckt.send(b"!!\n")
 
         self._send_thread = gevent.spawn(self._process_send_queue)
 
