@@ -110,14 +110,14 @@ class RoaTree:
         self.meta["type"] = "rib"
         self._tree = tree
 
-    def check_invalid(self, prefix, origin):
+    def check_invalid(self, *args, **kwargs):
         """Check if invalid.
 
         Returns True for invalid, False if valid or not found.
         """
-        return self.validation_state(prefix, origin)["state"] == "invalid"
+        return self.validation_state(*args, **kwargs)["state"] == "invalid"
 
-    def validation_state(self, prefix, origin):
+    def validation_state(self, prefix, origin, check_maxlength=True):
         """
         prefix is the to-be-tested prefix
         origin is the origin asn to be used in the test
@@ -131,18 +131,31 @@ class RoaTree:
             return {"state": "notfound"}
 
         covered_roas = []
-        best_prefix = tree.search_worst(prefix_str).prefix
+        worst_prefix = tree.search_worst(prefix_str).prefix
+        print(f"WORST {worst_prefix}")
 
-        for vrp in tree.search_covered(best_prefix):
+        for vrp in tree.search_covered(worst_prefix):
             vrp_prefix = ipaddress.ip_network(vrp.prefix)
+            print(f"FOUND {vrp_prefix}")
+
             if not prefix.subnet_of(vrp_prefix):
+                print("NOT SUBNET")
                 continue
+
+#            if not (prefix.network_address >= vrp_prefix.network_address and prefix.broadcast_address <= vrp_prefix.broadcast_address):
+#                continue
+
 
             for roa in vrp.data["roas"]:
                 covered_roas.append(roa)
+                if origin != roa["asn"]:
+                    continue
 
-                if vrp.prefixlen <= prefix.prefixlen <= roa["maxLength"]:
-                    if origin == roa["asn"]:
-                        return {"state": "valid", "roa": roa}
+                if vrp.prefixlen > prefix.prefixlen:
+                    continue
+
+                if check_maxlength and prefix.prefixlen > roa["maxLength"]:
+                    continue
+                return {"state": "valid", "roa": roa}
 
         return {"state": "invalid", "roas": covered_roas}

@@ -39,6 +39,11 @@ def test_roatree_init_rpki(this_dir):
 
 @pytest.mark.parametrize("tree", all_trees())
 def test_roatree_validation(tree):
+    args = ("192.0.2.11/32", 12345, False)
+    state = tree.validation_state(*args)
+    assert state["state"] == "valid"
+    assert not tree.check_invalid(*args)
+
     args = ("192.0.2.0/24", 12345)
     state = tree.validation_state(*args)
     assert state["state"] == "valid"
