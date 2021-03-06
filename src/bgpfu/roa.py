@@ -117,6 +117,29 @@ class RoaTree:
         """
         return self.validation_state(*args, **kwargs)["state"] == "invalid"
 
+    def validate_best(self, prefix, origin):
+        """Validate prefix and orgin against most specific match only.
+        """
+        covered_roas = []
+        prefix = ipaddress.ip_network(prefix)
+        prefix_str = str(prefix)
+        vrp = self._tree.search_best(prefix_str)
+        if not vrp:
+            return {"state": "notfound"}
+
+        vrp_prefix = ipaddress.ip_network(vrp.prefix)
+        if not prefix.subnet_of(vrp_prefix):
+            return {"state": "notfound"}
+
+        for roa in vrp.data["roas"]:
+            if origin == roa["asn"]:
+                return {"state": "valid", "roa": roa}
+
+            covered_roas.append(roa)
+
+        print(f"invalid {prefix}")
+        return {"state": "invalid", "roas": covered_roas}
+
     def validation_state(self, prefix, origin, check_maxlength=True):
         """
         prefix is the to-be-tested prefix
@@ -127,8 +150,11 @@ class RoaTree:
         prefix = ipaddress.ip_network(prefix)
         prefix_str = str(prefix)
 
+        best = tree.search_best(prefix_str)
         if not tree.search_best(prefix_str):
             return {"state": "notfound"}
+
+        print(f"BEST {best.prefix}")
 
         covered_roas = []
         worst_prefix = tree.search_worst(prefix_str).prefix
@@ -139,7 +165,7 @@ class RoaTree:
             print(f"FOUND {vrp_prefix}")
 
             if not prefix.subnet_of(vrp_prefix):
-                print("NOT SUBNET")
+                print(f"{prefix} NOT SUBNET {vrp_prefix}")
                 continue
 
 #            if not (prefix.network_address >= vrp_prefix.network_address and prefix.broadcast_address <= vrp_prefix.broadcast_address):
