@@ -137,7 +137,6 @@ class RoaTree:
 
             covered_roas.append(roa)
 
-        print(f"invalid {prefix}")
         return {"state": "invalid", "roas": covered_roas}
 
     def validation_state(self, prefix, origin, check_maxlength=True):
@@ -154,23 +153,14 @@ class RoaTree:
         if not tree.search_best(prefix_str):
             return {"state": "notfound"}
 
-        print(f"BEST {best.prefix}")
-
         covered_roas = []
         worst_prefix = tree.search_worst(prefix_str).prefix
-        print(f"WORST {worst_prefix}")
 
         for vrp in tree.search_covered(worst_prefix):
             vrp_prefix = ipaddress.ip_network(vrp.prefix)
-            print(f"FOUND {vrp_prefix}")
 
             if not prefix.subnet_of(vrp_prefix):
-                print(f"{prefix} NOT SUBNET {vrp_prefix}")
                 continue
-
-#            if not (prefix.network_address >= vrp_prefix.network_address and prefix.broadcast_address <= vrp_prefix.broadcast_address):
-#                continue
-
 
             for roa in vrp.data["roas"]:
                 covered_roas.append(roa)
