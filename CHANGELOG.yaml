@@ -1,10 +1,13 @@
-Unreleased:
+0.2.0:
   added:
-    - python3
-    - check-roa
+  - python3
+  - check-roa
+  removed:
+  - python2
+Unreleased:
+  added: []
   changed: []
   deprecated: []
   fixed: []
-  removed:
-    - python2
+  removed: []
   security: []
