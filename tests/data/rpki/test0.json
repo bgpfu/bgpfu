@@ -1,0 +1,31 @@
+{
+  "metadata": {
+    "buildmachine": "dev8.ch2.20c.com",
+    "buildtime": "2021-02-27T21:50:59Z",
+    "elapsedtime": "230",
+    "usertime": "139",
+    "systemtime": "25",
+    "roas": 36929,
+    "failedroas": 12,
+    "invalidroas": 0,
+    "certificates": 19257,
+    "failcertificates": 1,
+    "invalidcertificates": 0,
+    "tals": 4,
+    "talfiles": "/etc/pki/tals/ripe.tal /etc/pki/tals/lacnic.tal /etc/pki/tals/afrinic.tal /etc/pki/tals/apnic.tal",
+    "manifests": 19256,
+    "failedmanifests": 8,
+    "stalemanifests": 0,
+    "crls": 19248,
+    "repositories": 26,
+    "vrps": 186913, 
+    "uniquevrps": 186838
+  },
+
+  "roas": [
+    { "asn": "AS12345", "prefix": "192.0.2.0/24", "maxLength": 24, "ta": "apnic" },
+    { "asn": "AS63311", "prefix": "192.0.0.0/20", "maxLength": 24, "ta": "apnic" },
+    { "asn": "AS63311", "prefix": "10.0.4.0/24", "maxLength": 24, "ta": "apnic" },
+    { "asn": "AS1", "prefix": "2001:db8::/32", "maxLength": 48, "ta": "ripe" }
+  ]
+}

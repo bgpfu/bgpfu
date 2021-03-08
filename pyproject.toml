@@ -15,7 +15,10 @@ classifiers = [
     "Intended Audience :: System Administrators",
     "Intended Audience :: Telecommunications Industry",
     "License :: OSI Approved :: Apache Software License",
-    "Programming Language :: Python :: 2.7",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Internet",
 ]
@@ -37,6 +40,7 @@ Jinja2 = "^2.11.3"
 click = "^7.1.2"
 gevent = "^21.1.2"
 munge = "^1.1.0"
+py-radix = "^0.10.0"
 
 [tool.poetry.dev-dependencies]
 codecov = "^2.1.10"

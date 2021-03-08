@@ -63,7 +63,7 @@ class BaseObject:
         self.log.debug(msg="finished cleaning up %s" % self)
 
     def raise_type_error(self, arg=None, cls=None):
-        msg = "argument {} ({}) not of type {}".format(arg.__name__, arg, cls)
+        msg = f"argument {arg.__name__} ({arg}) not of type {cls}"
         self.log.error(msg=msg)
         raise TypeError(msg)
 
