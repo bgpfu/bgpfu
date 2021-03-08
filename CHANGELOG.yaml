@@ -1,6 +1,7 @@
 Unreleased:
   added:
     - python3
+    - check-roa
   changed: []
   deprecated: []
   fixed: []
