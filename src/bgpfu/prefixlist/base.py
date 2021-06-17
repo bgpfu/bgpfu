@@ -11,7 +11,7 @@ class PrefixListBase(BaseObject):
         self.aggregate = aggregate
 
     def check_val(self, v):
-        """ check value, call ctor if needed """
+        """check value, call ctor if needed"""
         if not isinstance(v, (ipaddress.IPv4Network, ipaddress.IPv6Network)):
             return ipaddress.ip_network(str(v))
         return v

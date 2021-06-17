@@ -13,7 +13,7 @@ class IRRBase:
         pass
 
     def set_sources(self, *sources):
-        """ set sources to the specified list """
+        """set sources to the specified list"""
         raise NotImplementedError(
             "{} does not implement {}".format(
                 self.__class__.__name__, inspect.currentframe().f_code.co_name
@@ -39,7 +39,7 @@ class IRRBase:
         return list(self.iter_sets(objs, expand))
 
     def iter_routes(self, objs, proto=4):
-        """ get routes for specified object """
+        """get routes for specified object"""
         raise NotImplementedError(
             "{} does not implement {}".format(
                 self.__class__.__name__, inspect.currentframe().f_code.co_name
@@ -47,7 +47,7 @@ class IRRBase:
         )
 
     def get_routes(self, objs, proto=4):
-        """ get routes for specified object """
+        """get routes for specified object"""
         return list(self.iter_routes(objs, proto))
 
     def iter_prefixes(self, as_sets, proto=4):

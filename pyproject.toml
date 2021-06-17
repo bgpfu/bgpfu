@@ -2,6 +2,8 @@
 name = "bgpfu"
 version = "0.2.0"
 description = "BGP toolkit"
+readme = "README.md"
+repository = "https://github.com/bgpfu/bgpfu/"
 authors = [
     "Matt Griswold <grizz@20c.com>",
     "Ben Maddison <benm@workonline.africa>",
@@ -35,7 +37,7 @@ multi_line_output = 3
 bgpfu = "bgpfu.cli:cli"
 
 [tool.poetry.dependencies]
-python = "^3.6"
+python = "^3.6.2"
 Jinja2 = "^2.11.3"
 click = "^7.1.2"
 gevent = "^21.1.2"
@@ -49,11 +51,19 @@ pytest = "^6.1.2"
 pytest-cov = "^2.10.1"
 pytest-filedata = "^0.4.0"
 tox = "^3.20.1"
+
+# lint
 bandit = "^1.6.2"
-black = "^20.8b1"
+black = {version = ">=20", allow-prereleases = true}
 isort = "^5.7.0"
 flake8 = "^3.8.4"
+pre-commit = "^2.13.0"
+pyupgrade = "^2.19.4"
+
+# ctl
 ctl = "^1.0.0"
+jinja2 = "^2.11.2"
+tmpl = "^0.3.0"
 twine = "^3.3.0"
 
 [build-system]

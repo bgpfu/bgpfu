@@ -75,7 +75,7 @@ def cli(ctx):
 @click.option("--rib-file", help="use bgp rib file")
 @click.option("--rpki-file", help="use rpki json file")
 def check_roa(ctx, prefix, asn, rib_file, rpki_file, **kwargs):
-    """ check roa for prefix """
+    """check roa for prefix"""
     prefix = ipaddress.ip_network(prefix)
     asn = int(asn)
 
@@ -99,7 +99,7 @@ def check_roa(ctx, prefix, asn, rib_file, rpki_file, **kwargs):
 @common_options
 @click.argument("query", nargs=1)
 def raw(ctx, query, **kwargs):
-    """ raw irr query """
+    """raw irr query"""
     if kwargs.get("debug", False):
         logging.basicConfig(level=logging.DEBUG)
 
@@ -115,7 +115,7 @@ def raw(ctx, query, **kwargs):
 @click.argument("as-set", nargs=-1)
 @click.pass_context
 def as_set(ctx, as_set, **kwargs):
-    """ expand an as-set """
+    """expand an as-set"""
     if kwargs.get("debug", False):
         logging.basicConfig(level=logging.DEBUG)
     bgpfuc = bgpfu.client.IRRClient()
@@ -143,7 +143,7 @@ def as_set(ctx, as_set, **kwargs):
 @click.argument("as-set", nargs=-1)
 @click.pass_context
 def prefixlist(ctx, as_set, output, output_format, proto, **kwargs):
-    """ get prefix list for specified as-sets """
+    """get prefix list for specified as-sets"""
     if kwargs.get("debug", False):
         logging.basicConfig(level=logging.DEBUG)
 
@@ -166,4 +166,4 @@ def prefixlist(ctx, as_set, output, output_format, proto, **kwargs):
         with click.open_file(output, "w") as fobj:
             outfmt.write(output_format, fobj, prefixes.str_list())
 
-        print("LEN {}".format(len(prefixes)))
+        print(f"LEN {len(prefixes)}")
