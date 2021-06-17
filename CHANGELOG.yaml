@@ -9,5 +9,6 @@ Unreleased:
   changed: []
   deprecated: []
   fixed: []
+  - ROA parsing when RPKI json uses int for ASN
   removed: []
   security: []
