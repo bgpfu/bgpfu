@@ -16,7 +16,7 @@ def parse_roa(roa):
         roa["maxLength"] = int(roa["maxLength"])
         # check bounds on asn
         if not 0 <= roa["asn"] < 2 ** 32:
-            raise ValueError(f"asn {asn} is out of range")
+            raise ValueError(f"asn {roa['asn']} is out of range")
     except ValueError as exc:
         logger.warning(str(exc))
         return None
