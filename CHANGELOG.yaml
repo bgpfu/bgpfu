@@ -4,11 +4,13 @@
   - check-roa
   removed:
   - python2
+0.3.0:
+  fixed:
+  - ROA parsing when RPKI json uses int for ASN
 Unreleased:
   added: []
   changed: []
   deprecated: []
   fixed: []
-  - ROA parsing when RPKI json uses int for ASN
   removed: []
   security: []

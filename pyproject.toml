@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "bgpfu"
-version = "0.2.0"
+version = "0.3.0"
 description = "BGP toolkit"
 readme = "README.md"
 repository = "https://github.com/bgpfu/bgpfu/"
