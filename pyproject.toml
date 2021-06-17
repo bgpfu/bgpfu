@@ -2,6 +2,8 @@
 name = "bgpfu"
 version = "0.2.0"
 description = "BGP toolkit"
+readme = "README.md"
+repository = "https://github.com/bgpfu/bgpfu/"
 authors = [
     "Matt Griswold <grizz@20c.com>",
     "Ben Maddison <benm@workonline.africa>",
