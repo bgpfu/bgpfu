@@ -26,6 +26,9 @@
     { "asn": "AS12345", "prefix": "192.0.2.0/24", "maxLength": 24, "ta": "apnic" },
     { "asn": "AS63311", "prefix": "192.0.0.0/20", "maxLength": 24, "ta": "apnic" },
     { "asn": "AS63311", "prefix": "10.0.4.0/24", "maxLength": 24, "ta": "apnic" },
-    { "asn": "AS1", "prefix": "2001:db8::/32", "maxLength": 48, "ta": "ripe" }
+    { "asn": "AS1", "prefix": "2001:db8::/32", "maxLength": 48, "ta": "ripe" },
+
+    { "asn": 63311, "prefix": "10.0.6.0/24", "maxLength": 24, "ta": "apnic" },
+    { "asn": 1, "prefix": "2001:db8:1::/32", "maxLength": 48, "ta": "ripe" }
   ]
 }
