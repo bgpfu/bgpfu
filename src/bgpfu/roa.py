@@ -11,7 +11,8 @@ def parse_roa(roa):
     """Parses an roa record in place and returns the result."""
     try:
         roa["prefix"] = ipaddress.ip_network(roa["prefix"])
-        roa["asn"] = int(roa["asn"].replace("AS", ""))
+        if not isinstance(roa["asn"], int):
+            roa["asn"] = int(roa["asn"].replace("AS", ""))
         roa["maxLength"] = int(roa["maxLength"])
         # check bounds on asn
         if not 0 <= roa["asn"] < 2 ** 32:
