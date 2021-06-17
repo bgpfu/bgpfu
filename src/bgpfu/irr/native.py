@@ -256,7 +256,7 @@ class IRRClient(IRRBase):
             if not readable:
                 raise RuntimeError("socket connection broken")
 
-            chunk = self.sckt.recv(chunk_size)
+            chunk = self.sckt.recv(chunk_size).decode("utf-8")
 
             if chunk == "":
                 raise RuntimeError("socket connection broken")
