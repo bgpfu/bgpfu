@@ -131,7 +131,7 @@ class IRRClient(IRRBase):
         res = list(self.iter_query((query,)))
 
         if len(res) > 1:
-            raise ValueError("query_one returned {} results".format(len(res)))
+            raise ValueError(f"query_one returned {len(res)} results")
 
         elif len(res) == 1:
             return res[0]
@@ -280,7 +280,7 @@ class IRRClient(IRRBase):
         return "".join(chunks), buf
 
     def set_sources(self, *sources):
-        """ set sources to the specified list """
+        """set sources to the specified list"""
         res = self.query("!s{}".format(",".join(sources)))
         # FIXME - stop eating the last C on a command
         # if len(res) != 1:
@@ -314,7 +314,7 @@ class IRRClient(IRRBase):
         return set(sets)
 
     def iter_routes(self, obj, proto=4):
-        """ get routes for specified object """
+        """get routes for specified object"""
         proto = int(proto)
         if proto == 4:
             q = "!g"
@@ -330,7 +330,7 @@ class IRRClient(IRRBase):
                 yield res.split()
 
     def iter_prefixes(self, as_sets, proto=4):
-        """ get prefix list for specified as-set(s) """
+        """get prefix list for specified as-set(s)"""
         if isinstance(as_sets, str):
             as_sets = (as_sets,)
         querylist = list(map(self.make_set_query, as_sets))

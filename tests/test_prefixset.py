@@ -190,7 +190,7 @@ def test_prefixset_data_no_aggr():
 
 
 def no_test_prefixset_data_aggr():
-    """ Test broken from py3 conversion. """
+    """Test broken from py3 conversion."""
     pre_data = {
         "ipv4": [
             {"prefix": "10.0.0.0/9"},

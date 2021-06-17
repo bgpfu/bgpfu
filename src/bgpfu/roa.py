@@ -119,8 +119,7 @@ class RoaTree:
         return self.validation_state(*args, **kwargs)["state"] == "invalid"
 
     def validate_best(self, prefix, origin):
-        """Validate prefix and orgin against most specific match only.
-        """
+        """Validate prefix and orgin against most specific match only."""
         covered_roas = []
         prefix = ipaddress.ip_network(prefix)
         prefix_str = str(prefix)
