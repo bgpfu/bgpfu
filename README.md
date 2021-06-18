@@ -7,7 +7,7 @@
 
 # BGP FU
 
-![BGPFU](/../gh-pages/images/BGP-FU-Logo-RGB-resized.png?raw=true)
+![BGPFU](https://raw.githubusercontent.com/bgpfu/bgpfu/gh-pages/images/BGP-FU-Logo-RGB-resized.png)
 
 BGP FU is a toolbelt to assist with the automatic creation of safe prefix-filters.
 
